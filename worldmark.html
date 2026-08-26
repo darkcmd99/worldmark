@@ -46,6 +46,11 @@
     .marker-image,.marker-icon{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;max-width:100%;max-height:100%}
     .marker-image{object-fit:contain;object-position:center}
     .marker-label{display:block;z-index:3;line-height:1.15;overflow:visible;text-overflow:clip}
+    /* 标点层不随底图元素一起缩放，规避 Edge 对嵌套 transform 图片的拉伸。 */
+    .marker-layer{position:absolute;inset:0;z-index:2;overflow:visible;pointer-events:none}
+    .marker-layer .marker{pointer-events:auto;transform:translate(-50%,-50%)!important}
+    .volume-range,.type .volume,.type-editor [data-volume]{display:none!important}
+    .type-editor{grid-template-columns:1fr 38px 100px 72px 38px!important}
   </style>
 </head>
 <body>
@@ -66,8 +71,8 @@
   <div class="modal" id="importModal" style="display:none"><div class="dialog"><div class="eyebrow">JSON 导入</div><h2>选择导入范围</h2><p>完整导入会替换当前看板配置；按区域导入会先清空本地含对应区域标签的标点，再导入同区域标点，从而同步删除。</p><p class="text-muted">区域协作文件会自动读取其中的区域标签；本地不存在该标签时会自动创建。</p><div class="wizard-footer"><button class="btn" id="closeImport">取消</button><div class="row"><button class="btn" id="importAll">导入全部配置</button><button class="btn primary" id="importRegion">导入区域协作文件</button></div></div><input id="importAllFile" type="file" accept="application/json" hidden /><input id="regionImportFile" type="file" accept="application/json" hidden /></div></div>
   <script>
     const deliveryForms=['任务','事件','收集','POI'],volumeGrades=['A','B','C','D'],defaults=[{id:'landmark',name:'地标 / 探索',icon:'⌂',layer:'POI',volume:'A'},{id:'combat',name:'战斗遭遇',icon:'⚔',layer:'事件',volume:'B'},{id:'quest',name:'任务节点',icon:'!',layer:'任务',volume:'B'},{id:'loot',name:'宝箱 / 收集',icon:'◆',layer:'收集',volume:'C'}];
-    let state={name:'阿斯特拉边境',image:null,imageSize:null,types:defaults,pois:[],activeType:'landmark',visibleTypes:defaults.map(t=>t.id),volumeRange:{min:'A',max:'D'},lockIconSize:false,iconSize:20,showLabels:true,coordinateCalibration:null,gameplayTags:[],regionTags:[],multiSelected:[],boxSelectMode:false},pendingPos=null,editingPoiId=null,contextPos=null,contextPoiId=null,poiRegionSelection=[],view={zoom:1,x:0,y:0},drag=null,mapLayout={left:0,top:0,width:1,height:1};
-    const $=s=>document.querySelector(s), map=$('#map'), mapCanvas=$('#mapCanvas');
+    let state={name:'阿斯特拉边境',image:null,imageSize:null,types:defaults,pois:[],activeType:'landmark',visibleTypes:defaults.map(t=>t.id),volumeRange:{min:'A',max:'D'},lockIconSize:false,iconSize:20,showLabels:false,coordinateCalibration:null,gameplayTags:[],regionTags:[],multiSelected:[],boxSelectMode:false},pendingPos=null,editingPoiId=null,contextPos=null,contextPoiId=null,poiRegionSelection=[],view={zoom:1,x:0,y:0},drag=null,mapLayout={left:0,top:0,width:1,height:1};
+    const $=s=>document.querySelector(s), map=$('#map'), mapCanvas=$('#mapCanvas'), markerLayer=Object.assign(document.createElement('div'),{id:'markerLayer',className:'marker-layer'});mapCanvas.after(markerLayer);
     function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
     function typeBy(id){return state.types.find(t=>t.id===id)}
     function typeVisual(t,cls='type-icon'){return t?.iconImage?`<img class="${cls}-image" src="${esc(t.iconImage)}" alt=""/>`:`<i class="${cls}">${esc(t?.icon||'●')}</i>`}
@@ -75,7 +80,7 @@
     function deliveryForm(value){return deliveryForms.includes(value)?value:value==='事物层'?'收集':'POI'}
     function volumeGrade(value,fallback='B'){return volumeGrades.includes(value)?value:fallback}
     function normalizeVolumeRange(range){let min=volumeGrade(range?.min,'A'),max=volumeGrade(range?.max,'D');return volumeGrades.indexOf(min)<=volumeGrades.indexOf(max)?{min,max}:{min:max,max:min}}
-    function typeIsVisible(type){if(!type||!state.visibleTypes.includes(type.id))return false;let range=normalizeVolumeRange(state.volumeRange),index=volumeGrades.indexOf(volumeGrade(type.volume));return index>=volumeGrades.indexOf(range.min)&&index<=volumeGrades.indexOf(range.max)}
+    function typeIsVisible(type){return !!type&&state.visibleTypes.includes(type.id)}
     function normalizeTags(tags){return [...new Set((Array.isArray(tags)?tags:[]).filter(tag=>typeof tag==='string'&&tag.trim()).map(tag=>tag.trim()))]}
     function normalizeRegions(p){return normalizeTags(Array.isArray(p?.regions)?p.regions:(typeof p?.region==='string'&&p.region.trim()?[p.region]:[]))}
     function matchesSearch(p,query){return `${p.name||''} ${p.note||''} ${p.uniqueId||''} ${(p.tags||[]).join(' ')} ${normalizeRegions(p).join(' ')}`.toLowerCase().includes(query)}
@@ -112,7 +117,7 @@
     function openPoiEditor(id){let p=state.pois.find(x=>x.id===id);if(!p)return;editingPoiId=id;fillPoiTypes(p.type);$('#poiName').value=p.name;$('#poiNote').value=p.note||'';$('#poiUniqueId').value=p.uniqueId||'';$('#poiDuration').value=p.duration??'';$('#regionSearch').value='';renderPoiRegionChoices(normalizeRegions(p));renderPoiTagChoices(p.tags||[]);$('#poiModal .eyebrow').textContent='编辑标点';$('#poiModal h2').textContent='更新地点信息';$('#savePoi').textContent='保存修改';$('#poiModal').style.display='flex';$('#poiName').focus()}
     function updateSelectionBox(x1,y1,x2,y2){let r=map.getBoundingClientRect(),box=$('#selectionBox');Object.assign(box.style,{display:'block',left:Math.min(x1,x2)-r.left+'px',top:Math.min(y1,y2)-r.top+'px',width:Math.abs(x2-x1)+'px',height:Math.abs(y2-y1)+'px'})}
     function selectInBox(a,b){let x1=Math.min(a.x,b.x),x2=Math.max(a.x,b.x),y1=Math.min(a.y,b.y),y2=Math.max(a.y,b.y);state.multiSelected=state.pois.filter(p=>{let x=p.x/100*mapLayout.width,y=p.y/100*mapLayout.height;return typeIsVisible(typeBy(p.type))&&x>=x1&&x<=x2&&y>=y1&&y<=y2}).map(p=>p.id);state.selected=null;$('#detail').classList.remove('show');render();showToast(state.multiSelected.length?`已框选 ${state.multiSelected.length} 个标点，可拖动或按 Delete 删除`:'框选区域内没有可见标点')}
-    function moveMarkerNodes(ids){let wanted=new Set(ids);mapCanvas.querySelectorAll('.marker').forEach(node=>{if(!wanted.has(node.dataset.poi))return;let p=state.pois.find(item=>item.id===node.dataset.poi);if(p){node.style.left=p.x+'%';node.style.top=p.y+'%'}})}
+    function moveMarkerNodes(ids){let wanted=new Set(ids);markerLayer.querySelectorAll('.marker').forEach(node=>{if(!wanted.has(node.dataset.poi))return;let p=state.pois.find(item=>item.id===node.dataset.poi);if(p){node.style.left=(mapLayout.left+view.x+Number(p.x)/100*mapLayout.width*view.zoom)+'px';node.style.top=(mapLayout.top+view.y+Number(p.y)/100*mapLayout.height*view.zoom)+'px'}})}
     map.addEventListener('pointerdown',e=>{if((e.button!==0&&e.button!==1)||e.target.closest('#poiContextMenu'))return;e.preventDefault();$('#poiContextMenu').style.display='none';let middle=e.button===1,m=middle?null:e.target.closest('.marker'),ids=m&&state.multiSelected.includes(m.dataset.poi)?[...state.multiSelected]:[],kind=middle?'map':m?(ids.length>1?'multi-marker':'marker'):isInsideMapContent(e)?'box':'none',points=ids.map(id=>{let p=state.pois.find(x=>x.id===id);return{id,x:Number(p.x),y:Number(p.y)}}),bounds=points.length?{minX:Math.min(...points.map(p=>p.x)),maxX:Math.max(...points.map(p=>p.x)),minY:Math.min(...points.map(p=>p.y)),maxY:Math.max(...points.map(p=>p.y))}:null;drag={kind,middle,id:m?.dataset.poi,ids,points,bounds,startX:e.clientX,startY:e.clientY,startMap:(kind==='box'||kind==='multi-marker')?rawMapPoint(e):null,originX:view.x,originY:view.y,moved:false};if(kind==='box')updateSelectionBox(e.clientX,e.clientY,e.clientX,e.clientY);map.setPointerCapture(e.pointerId)});
     map.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;if(drag.kind==='map'&&drag.moved){view.x=drag.originX+dx;view.y=drag.originY+dy;mapCanvas.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.zoom})`}else if(drag.kind==='marker'&&drag.moved){let p=state.pois.find(x=>x.id===drag.id);Object.assign(p,mapPoint(e));moveMarkerNodes([drag.id])}else if(drag.kind==='multi-marker'&&drag.moved){let now=rawMapPoint(e),moveX=(now.x-drag.startMap.x)/mapLayout.width*100,moveY=(now.y-drag.startMap.y)/mapLayout.height*100,b=drag.bounds;moveX=Math.max(-b.minX,Math.min(100-b.maxX,moveX));moveY=Math.max(-b.minY,Math.min(100-b.maxY,moveY));drag.points.forEach(point=>{let p=state.pois.find(x=>x.id===point.id);if(p){p.x=+(point.x+moveX).toFixed(2);p.y=+(point.y+moveY).toFixed(2)}});moveMarkerNodes(drag.ids)}else if(drag.kind==='box')updateSelectionBox(drag.startX,drag.startY,e.clientX,e.clientY)});
     map.addEventListener('pointerup',e=>{if(!drag)return;let d=drag;drag=null;if(d.middle){render();return}if(d.kind==='box'){ $('#selectionBox').style.display='none';if(d.moved)selectInBox(d.startMap,rawMapPoint(e));else if(state.selected||state.multiSelected.length)clearSelection();else render();return}if(!d.moved){if(d.kind==='marker')selectPoi(d.id);else if(d.kind==='none'&&(state.selected||state.multiSelected.length))clearSelection();return}if(d.kind==='marker'||d.kind==='multi-marker')render()});
@@ -273,22 +278,29 @@
   </script>
   <script>
     (()=>{
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>baseApplyConfig({...data,showLabels:data?.showLabels===true});
+      const baseSelectPoi=selectPoi;
+      selectPoi=id=>{baseSelectPoi(id);let typeLine=$('#detail p');if(typeLine)typeLine.innerHTML=typeLine.innerHTML.replace(/ · 体量：.*?级/,'')};
       const baseRender=render;
       render=()=>{
+        markerLayer.replaceChildren();
         const result=baseRender();
-        // 控件值是设计基准；实际标记使用更紧凑的显示比例。
-        // 不设置文字下限，图标、字符图标和名称会始终同比例缩放。
+        mapCanvas.querySelectorAll('.marker').forEach(marker=>markerLayer.append(marker));
+        // 图标移到独立的屏幕坐标层：不会嵌套在底图 transform 中，Edge 也不会拉伸图片。
+        // 未锁定时随地图缩放，锁定时保持屏幕尺寸；文字、间距与图标使用同一比例尺。
         const controlSize=Math.max(8,Math.min(64,Number(state.iconSize)||20));
-        const iconSize=+(controlSize*.7).toFixed(1);
+        const iconSize=+(controlSize*.7*(state.lockIconSize?1:view.zoom)).toFixed(2);
         const glyphSize=+(iconSize*.78).toFixed(1);
         const labelSize=+(iconSize*.36).toFixed(1);
         const labelGap=+(iconSize*.12).toFixed(1);
-        mapCanvas.querySelectorAll('.marker').forEach(marker=>{
+        markerLayer.querySelectorAll('.marker').forEach(marker=>{
           marker.style.setProperty('--icon-size',`${iconSize}px`);
           marker.style.setProperty('--glyph-size',`${glyphSize}px`);
           marker.style.setProperty('--label-size',`${labelSize}px`);
           marker.style.setProperty('--label-gap',`${labelGap}px`);
         });
+        moveMarkerNodes(state.pois.map(poi=>poi.id));
         return result;
       };
       render();
