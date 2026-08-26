@@ -40,7 +40,7 @@
     .online-status{min-height:19px;color:var(--muted);font-size:12px}.online-status.ready{color:var(--accent)}.online-status.error{color:#ffc2bd}.online-share{font-size:12px;color:var(--muted);word-break:break-all}.online-actions{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:18px}.online-actions .row{flex-wrap:wrap}.online-modal .dialog{width:min(620px,100%)}
     /* 地图标点：图片、字符图标与地点名称共用同一套尺寸标尺。 */
     .marker-icon{width:100%;height:100%;display:grid;place-items:center;font-size:var(--glyph-size,14px);line-height:1;overflow:hidden}
-    .marker-label{top:calc(100% + 4px);font-size:var(--label-size,10px);max-width:140px;overflow:hidden;text-overflow:ellipsis}
+    .marker-label{top:calc(100% + var(--label-gap,2px));font-size:var(--label-size,10px);max-width:140px;overflow:hidden;text-overflow:ellipsis}
   </style>
 </head>
 <body>
@@ -270,12 +270,18 @@
       const baseRender=render;
       render=()=>{
         const result=baseRender();
-        const iconSize=Math.max(8,Math.min(64,Number(state.iconSize)||20));
-        const glyphSize=Math.max(10,Math.min(40,Math.round(iconSize*.78)));
-        const labelSize=Math.max(9,Math.min(16,Math.round(iconSize*.45)));
+        // 控件值是设计基准；实际标记使用更紧凑的显示比例。
+        // 不设置文字下限，图标、字符图标和名称会始终同比例缩放。
+        const controlSize=Math.max(8,Math.min(64,Number(state.iconSize)||20));
+        const iconSize=+(controlSize*.7).toFixed(1);
+        const glyphSize=+(iconSize*.78).toFixed(1);
+        const labelSize=+(iconSize*.36).toFixed(1);
+        const labelGap=+(iconSize*.12).toFixed(1);
         mapCanvas.querySelectorAll('.marker').forEach(marker=>{
+          marker.style.setProperty('--icon-size',`${iconSize}px`);
           marker.style.setProperty('--glyph-size',`${glyphSize}px`);
           marker.style.setProperty('--label-size',`${labelSize}px`);
+          marker.style.setProperty('--label-gap',`${labelGap}px`);
         });
         return result;
       };
