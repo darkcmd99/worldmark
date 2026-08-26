@@ -38,6 +38,9 @@
     .type-global-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0;padding:0 15px 8px}.types-title .type-global-actions .btn{padding:5px;font-size:11px}
     .gameplay-filter{margin:0 15px 8px;border:1px solid var(--line);border-radius:7px;background:#0c120f}.gameplay-filter summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;color:var(--muted);font-size:11px;cursor:pointer;list-style:none}.gameplay-filter summary::-webkit-details-marker{display:none}.gameplay-filter summary::after{content:'⌄';color:var(--accent);font-size:14px;line-height:1}.gameplay-filter[open] summary{border-bottom:1px solid var(--line)}.gameplay-filter[open] summary::after{transform:rotate(180deg)}.gameplay-filter-summary{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gameplay-filter-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:7px;max-height:132px;overflow-y:auto}.gameplay-filter .tag-choice{min-width:0;padding:4px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gameplay-filter-empty{padding:9px;color:var(--muted);font-size:11px}.filter-clear{grid-column:1/-1;padding:4px 6px;font-size:10px;justify-self:end}
     .online-status{min-height:19px;color:var(--muted);font-size:12px}.online-status.ready{color:var(--accent)}.online-status.error{color:#ffc2bd}.online-share{font-size:12px;color:var(--muted);word-break:break-all}.online-actions{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:18px}.online-actions .row{flex-wrap:wrap}.online-modal .dialog{width:min(620px,100%)}
+    /* 地图标点：图片、字符图标与地点名称共用同一套尺寸标尺。 */
+    .marker-icon{width:100%;height:100%;display:grid;place-items:center;font-size:var(--glyph-size,14px);line-height:1;overflow:hidden}
+    .marker-label{top:calc(100% + 4px);font-size:var(--label-size,10px);max-width:140px;overflow:hidden;text-overflow:ellipsis}
   </style>
 </head>
 <body>
@@ -260,6 +263,23 @@
       onlineButton.onclick=()=>{$online('onlineModal').style.display='flex'};$online('closeOnline').onclick=()=>{$online('onlineModal').style.display='none'};$online('connectOnline').onclick=connectBoard;$online('createOnline').onclick=createBoard;$online('copyShareLink').onclick=copyShareLink;$online('disconnectOnline').onclick=()=>{clearTimeout(saveTimer);if(cloudChannel&&cloudClient)cloudClient.removeChannel(cloudChannel);connection=null;cloudChannel=null;cloudClient=null;lastSignature='';clearPreferences();setOnlineStatus('已断开，当前继续使用本地看板。');showToast('已断开在线协作')};
       let sharedFromUrl=new URL(location.href).searchParams.get('worldmark'),savedShare=savedPreferences.shareLink;if(sharedFromUrl)$online('onlineShareLink').value=location.href;
       setTimeout(()=>{if((sharedFromUrl||savedShare)&&(initialConfig.url||savedPreferences.url)&&(initialConfig.publishableKey||savedPreferences.publishableKey))connectBoard();else if(sharedFromUrl){$online('onlineModal').style.display='flex';setOnlineStatus('请填写此 Supabase 项目的 URL 与 publishable key 后连接。')}},0);
+    })();
+  </script>
+  <script>
+    (()=>{
+      const baseRender=render;
+      render=()=>{
+        const result=baseRender();
+        const iconSize=Math.max(8,Math.min(64,Number(state.iconSize)||20));
+        const glyphSize=Math.max(10,Math.min(40,Math.round(iconSize*.78)));
+        const labelSize=Math.max(9,Math.min(16,Math.round(iconSize*.45)));
+        mapCanvas.querySelectorAll('.marker').forEach(marker=>{
+          marker.style.setProperty('--glyph-size',`${glyphSize}px`);
+          marker.style.setProperty('--label-size',`${labelSize}px`);
+        });
+        return result;
+      };
+      render();
     })();
   </script>
 </body>
