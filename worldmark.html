@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worldmark · 开放世界标点规划</title>
+  <style>
+    :root{--ink:#eff3f0;--muted:#94a49c;--line:rgba(234,244,237,.13);--panel:#101714;--accent:#d6ee62;--danger:#f07b70;--map:#263c34}*{box-sizing:border-box}body{margin:0;background:#0b100e;color:var(--ink);font:14px/1.45 Inter,"Microsoft YaHei",system-ui,sans-serif;overflow:hidden}button,input,select{font:inherit}button{cursor:pointer}.app{height:100vh;display:grid;grid-template-columns:340px 1fr}.sidebar{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}.brand{padding:22px 22px 18px;border-bottom:1px solid var(--line)}.brand small{color:var(--accent);letter-spacing:.16em;font-weight:700}.brand h1{font-size:20px;margin:3px 0 0;letter-spacing:-.04em}.controls{padding:15px;display:grid;gap:10px;border-bottom:1px solid var(--line)}input,select{width:100%;background:#0c120f;border:1px solid var(--line);border-radius:7px;padding:9px 10px;color:var(--ink);outline:none}input:focus,select:focus{border-color:var(--accent)}.row{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#1a241f;color:var(--ink);border-radius:7px;padding:8px 10px;white-space:nowrap}.btn:hover{border-color:#83987c}.btn.primary{background:var(--accent);border-color:var(--accent);color:#15200f;font-weight:700}.btn.danger{color:#ffc2bd}.type-list,.poi-list{overflow:auto;padding:8px 15px}.types-title{display:flex;justify-content:space-between;align-items:center;padding:12px 15px 3px;color:var(--muted);font-size:12px}.type-row{display:flex;align-items:center;gap:3px}.type-toggle{width:16px;height:16px;accent-color:var(--accent);flex:0 0 auto}.type{display:flex;align-items:center;gap:9px;flex:1;width:100%;border:0;border-radius:7px;background:transparent;color:var(--ink);padding:8px;text-align:left}.type.active{background:#26352c}.swatch{width:10px;height:10px;border-radius:50%;flex:0 0 auto}.type .count{margin-left:auto;color:var(--muted);font-size:12px}.poi-wrap{border-top:1px solid var(--line);min-height:0;display:flex;flex:1;flex-direction:column}.poi-wrap .types-title{padding-top:12px}.poi{width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.05);padding:10px 7px;color:var(--ink)}.poi:hover,.poi.selected{background:#1b2721}.poi small{display:block;color:var(--muted);margin-top:2px}.main{position:relative;min-width:0;background:var(--map)}.topbar{height:60px;background:rgba(11,16,14,.9);backdrop-filter:blur(12px);position:absolute;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--line)}.map-name{font-weight:600}.map-name span{font-weight:400;color:var(--muted);margin-left:8px}.top-actions{display:flex;gap:8px}.map{width:100%;height:100%;position:relative;overflow:hidden;cursor:grab;background:#243b32}.map:active{cursor:grabbing}.map-canvas{position:absolute;inset:0;transform-origin:0 0;background-color:#243b32;background-image:linear-gradient(25deg,rgba(3,12,8,.28) 25%,transparent 25% 75%,rgba(3,12,8,.24) 75%),linear-gradient(155deg,rgba(164,194,85,.14),transparent 50%),repeating-linear-gradient(20deg,transparent 0 32px,rgba(201,225,142,.08) 33px 34px,transparent 35px 78px);background-size:160px 160px,100% 100%,100% 100%}.map-canvas.has-image{background-size:cover;background-position:center;background-repeat:no-repeat}.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(234,244,237,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(234,244,237,.06) 1px,transparent 1px);background-size:64px 64px;pointer-events:none}.marker{position:absolute;transform:translate(-50%,-50%) scale(var(--icon-scale,1));width:20px;height:20px;border:0;border-radius:0;background:transparent;padding:0;display:grid;place-items:center;z-index:2;cursor:grab}.marker:active{cursor:grabbing}.marker-icon{font-style:normal;font-size:14px;line-height:1;pointer-events:none}.marker-image{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}.map-tools{position:absolute;z-index:4;right:18px;bottom:18px;display:grid;gap:5px}.map-tools .btn{font-size:18px;width:35px;height:35px;padding:0}.map-tools .lock{width:auto;padding:0 8px;font-size:11px}.map-tools .lock[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}.zoom-readout{background:rgba(11,16,14,.8);padding:7px 9px;border-radius:6px;color:var(--muted);font-size:11px;text-align:center}.map-hint{position:absolute;left:18px;bottom:18px;background:rgba(11,16,14,.8);padding:8px 11px;border-radius:6px;color:var(--muted);font-size:12px;pointer-events:none}.empty{color:var(--muted);padding:18px 7px;text-align:center}.modal{position:fixed;inset:0;z-index:20;background:rgba(4,8,6,.78);display:flex;align-items:center;justify-content:center;padding:20px}.dialog{background:#121b16;border:1px solid var(--line);width:min(680px,100%);border-radius:13px;padding:27px;box-shadow:0 24px 70px #000}.wizard-step{display:none}.wizard-step.show{display:block}.eyebrow{color:var(--accent);font-size:12px;font-weight:bold;letter-spacing:.14em}.dialog h2{font-size:27px;margin:6px 0 8px;letter-spacing:-.04em}.dialog p{color:var(--muted);margin:0 0 20px}.field{display:grid;gap:6px;margin:12px 0}.field label{color:#c5d0c9;font-size:12px}.type-editor{display:grid;grid-template-columns:1fr 44px 104px 60px 44px;gap:8px;align-items:center}.type-editor input[type=file]{font-size:10px;padding:7px 3px}.icon-preview{width:30px;height:30px;display:grid;place-items:center;background:#0c120f;border:1px solid var(--line);border-radius:4px;font-size:15px;overflow:hidden}.icon-preview img{width:22px;height:22px;object-fit:contain}.color{height:38px;padding:3px}.wizard-footer{display:flex;justify-content:space-between;align-items:center;margin-top:22px}.dots{color:var(--muted);letter-spacing:4px}.dots b{color:var(--accent)}.detail{position:absolute;right:18px;top:78px;width:260px;z-index:4;background:rgba(16,23,20,.94);border:1px solid var(--line);border-radius:9px;padding:15px;display:none}.detail.show{display:block}.detail h3{margin:0 0 4px}.detail p{color:var(--muted);font-size:12px;margin:0 0 12px}.detail .row{justify-content:flex-end}.toast{position:fixed;z-index:30;left:50%;bottom:20px;transform:translateX(-50%);background:#e7f5dc;color:#162012;padding:10px 14px;border-radius:7px;display:none;font-weight:600}@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{position:absolute;z-index:8;bottom:0;left:0;right:0;height:46%;border-right:0;border-top:1px solid var(--line)}.brand{padding:10px 15px}.brand h1{font-size:16px}.controls{padding:8px 15px;grid-template-columns:1fr auto}.controls .row{grid-column:1/-1}.type-list{display:none}.topbar{padding-left:14px}.top-actions{gap:4px}.top-actions .btn{padding:7px}.detail{top:70px;right:10px}.map-hint{bottom:48%}.map-tools{bottom:48%;right:10px}.type-editor{grid-template-columns:1fr 38px 85px 50px 35px}}
+    /* 叠加规则：上传的底图保持原始比例，图标尺寸由状态控制。 */
+    .map-canvas{inset:auto}
+    .marker{width:var(--icon-size,20px);height:var(--icon-size,20px)}
+    .marker.active{outline:2px solid var(--accent);outline-offset:2px}
+    .map-tools .size-control{width:130px;height:auto;padding:6px 8px;color:var(--muted);font-size:11px;display:grid;gap:3px}
+    .size-control label{display:flex;justify-content:space-between;gap:6px}.size-control input{accent-color:var(--accent);width:100%}
+    .map{background-color:#17251f;background-image:linear-gradient(rgba(211,235,179,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(211,235,179,.1) 1px,transparent 1px);background-size:32px 32px}
+    .map-tools{width:138px;align-items:stretch;gap:6px}.map-tools .lock{width:100%;height:30px}.map-tools .size-control{width:100%}.zoom-controls{display:grid;grid-template-columns:1fr 50px 1fr;gap:5px;align-items:center}.zoom-controls .btn{width:100%;height:31px}.zoom-controls .zoom-readout{padding:7px 2px}
+    .marker-label{position:absolute;left:50%;top:calc(100% + 3px);transform:translateX(-50%);white-space:nowrap;color:var(--ink);font-size:var(--label-size,11px);font-weight:500;line-height:1;pointer-events:none;text-shadow:0 1px 2px #07100b}
+    .type-editor{grid-template-columns:1fr 38px 90px 72px 52px 38px}.type-editor select{padding:8px 4px;font-size:11px}.coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.coord-grid .field{margin:0}
+    .dialog{max-height:calc(100vh - 40px);overflow-y:auto}.wizard-step[data-step="2"] #setupTypes{max-height:calc(100vh - 315px);overflow-y:auto;padding-right:5px}
+    .type-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 6px;flex:1;min-height:0;overflow-y:auto;padding:5px 10px 8px;align-content:start}.volume-range{padding:0 15px 8px;display:grid;gap:5px;color:var(--muted);font-size:11px}.volume-range .row{gap:6px}.volume-range select{padding:5px 6px;font-size:12px}.type-group{grid-column:1/-1}.type-group-head{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 2px;color:var(--muted);font-size:11px}.type-group-head .btn{padding:3px 6px;font-size:10px}.type-group-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px}.type-row{min-width:0}.type-row .type{gap:6px;padding:6px 4px;font-size:12px;min-width:0}.type-toggle{width:13px;height:13px}.type .volume{color:var(--muted);font-size:10px}.type .count{font-size:10px}.type-icon,.type-icon-image{width:16px;height:16px;flex:0 0 16px;display:grid;place-items:center;font-size:12px;font-style:normal;object-fit:contain}.type-icon{color:var(--ink)}
+    .zoom-controls{grid-template-columns:1fr 1fr}.zoom-readout{width:100%;font-weight:600;letter-spacing:.03em}.map-tools .zoom-readout{padding:7px 2px}
+    .selection-box{position:absolute;z-index:6;display:none;border:1px solid var(--accent);background:rgba(214,238,98,.13);pointer-events:none}.marker.multi-selected{outline:2px solid var(--accent);outline-offset:2px}.poi-context-menu{position:absolute;z-index:12;display:none;background:#101714;border:1px solid var(--line);border-radius:7px;padding:5px}.poi-context-menu .btn{font-size:12px;width:auto;height:auto;padding:7px 9px}.type-editor{grid-template-columns:1fr 38px 100px 72px 48px 38px}
+    .tag-choices{display:flex;flex-wrap:wrap;gap:6px}.tag-choice{display:flex;align-items:center;gap:4px;background:#0c120f;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px}.tag-choice input{width:auto}.region-picker{max-height:170px;overflow-y:auto;align-content:flex-start;padding:2px}.region-summary{color:var(--muted);font-size:12px;min-height:18px}.tag-list{display:grid;gap:5px;max-height:240px;overflow-y:auto}.tag-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;background:#0c120f;border:1px solid var(--line);border-radius:6px}.tag-item input{flex:1;min-width:0;width:auto;padding:5px 7px}.tag-item .btn{padding:4px 7px}.detail .row{flex-wrap:wrap}
+    .volume-range{padding:0 15px 10px;gap:6px}.volume-range-head{display:flex;justify-content:space-between;align-items:center}.volume-range-value{color:var(--ink);font-size:11px}.dual-range{position:relative;height:24px;margin:0 5px}.dual-range-track,.dual-range-fill{position:absolute;left:0;right:0;top:10px;height:4px;border-radius:4px}.dual-range-track{background:rgba(234,244,237,.15)}.dual-range-fill{background:var(--accent);right:auto}.dual-range input{appearance:none;position:absolute;inset:0;width:100%;height:24px;margin:0;padding:0;border:0;background:transparent;pointer-events:none;outline:none}.dual-range input::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #15200f;cursor:ew-resize;pointer-events:auto}.dual-range input::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #15200f;cursor:ew-resize;pointer-events:auto}.dual-range input::-webkit-slider-runnable-track{height:4px;background:transparent}.dual-range input::-moz-range-track{height:4px;background:transparent}.range-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:-3px}.map-tools{width:auto;max-width:calc(100% - 36px);display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px}.map-tools .lock{width:auto;height:32px}.map-tools .size-control{width:154px;flex:0 0 154px;height:auto}.map-tools .zoom-controls{width:72px;display:grid;grid-template-columns:1fr 1fr;gap:5px}.map-tools .zoom-readout{width:82px;padding:7px 6px}.map-tools #resetView{height:32px}
+    /* 紧凑竖向工具组：空间不足时在组内滚动，始终保留在地图视口内。 */
+    .map-tools{width:138px;max-width:calc(100% - 36px);display:grid;grid-template-columns:1fr;align-items:stretch;justify-content:stretch;gap:6px;max-height:calc(100% - 96px);overflow-x:hidden;overflow-y:auto;padding:2px;scrollbar-width:thin}
+    .map-tools .lock,.map-tools #resetView{width:100%;height:30px}
+    .map-tools .size-control{width:100%;flex:none}
+    .map-tools .zoom-controls{width:100%;grid-template-columns:1fr 1fr;gap:5px}
+    .map-tools .zoom-readout{width:100%}
+    .type-global-actions{display:flex;gap:4px;margin-left:auto}.types-title .type-global-actions .btn{padding:3px 5px;font-size:10px}
+    @media(max-width:700px){.map-tools{max-height:calc(52% - 78px)}}
+    /* 类型过多时固定在侧栏内滚动，不占用地图区域。 */
+    .type-list{height:0;flex:1 1 0;min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;scrollbar-gutter:stable}
+    .type-list::-webkit-scrollbar{width:8px}.type-list::-webkit-scrollbar-track{background:transparent}.type-list::-webkit-scrollbar-thumb{background:rgba(214,238,98,.28);border-radius:8px;border:2px solid var(--panel)}.type-list::-webkit-scrollbar-thumb:hover{background:rgba(214,238,98,.5)}
+    .bulk-tag-import{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.bulk-tag-import small{grid-column:1/-1;color:var(--muted);font-size:11px}
+    /* 侧栏显示控制与玩法筛选。 */
+    .type-global-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0;padding:0 15px 8px}.types-title .type-global-actions .btn{padding:5px;font-size:11px}
+    .gameplay-filter{margin:0 15px 8px;border:1px solid var(--line);border-radius:7px;background:#0c120f}.gameplay-filter summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;color:var(--muted);font-size:11px;cursor:pointer;list-style:none}.gameplay-filter summary::-webkit-details-marker{display:none}.gameplay-filter summary::after{content:'⌄';color:var(--accent);font-size:14px;line-height:1}.gameplay-filter[open] summary{border-bottom:1px solid var(--line)}.gameplay-filter[open] summary::after{transform:rotate(180deg)}.gameplay-filter-summary{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gameplay-filter-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:7px;max-height:132px;overflow-y:auto}.gameplay-filter .tag-choice{min-width:0;padding:4px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gameplay-filter-empty{padding:9px;color:var(--muted);font-size:11px}.filter-clear{grid-column:1/-1;padding:4px 6px;font-size:10px;justify-self:end}
+    .online-status{min-height:19px;color:var(--muted);font-size:12px}.online-status.ready{color:var(--accent)}.online-status.error{color:#ffc2bd}.online-share{font-size:12px;color:var(--muted);word-break:break-all}.online-actions{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:18px}.online-actions .row{flex-wrap:wrap}.online-modal .dialog{width:min(620px,100%)}
+    /* 地图标点：图片、字符图标与地点名称共用同一套尺寸标尺。 */
+    .marker-icon{width:100%;height:100%;display:grid;place-items:center;font-size:var(--glyph-size,14px);line-height:1;overflow:hidden}
+    .marker-label{top:calc(100% + var(--label-gap,2px));font-size:var(--label-size,10px);max-width:140px;overflow:hidden;text-overflow:ellipsis}.marker.gameplay-hidden,.marker.stage-hidden{display:none!important}.marker.tentative{opacity:.28;filter:grayscale(.7) saturate(.55)}
+    /* 拖动中的图标不参与网格排版：图片始终锁在正方形内容盒，名称位于独立图层。 */
+    .marker{display:block;aspect-ratio:1 / 1;overflow:visible;isolation:isolate}
+    .marker-image,.marker-icon{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;max-width:100%;max-height:100%}
+    .marker-image{object-fit:contain;object-position:center}
+    .marker-label{display:block;z-index:3;line-height:1.15;overflow:visible;text-overflow:clip}
+    /* 标点层不随底图元素一起缩放，规避 Edge 对嵌套 transform 图片的拉伸。 */
+    .marker-layer{position:absolute;inset:0;z-index:2;overflow:visible;pointer-events:none}
+    .marker-layer .marker{pointer-events:auto;transform:translate(-50%,-50%)!important}
+    .volume-range,.type .volume,.type-editor [data-volume]{display:none!important}
+    .type-editor{grid-template-columns:1fr 38px 100px 72px auto 38px!important}
+    .type-order-controls{display:flex;gap:3px}.type-order-controls .btn{padding:4px 6px;font-size:11px;line-height:1}.type-order-controls .btn:disabled{opacity:.38;cursor:default}
+    .poi-type-picker{display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:8px;align-items:center}.poi-type-preview{width:36px;height:36px;display:grid;place-items:center;background:#0c120f;border:1px solid var(--line);border-radius:7px;overflow:hidden}.poi-type-preview img{width:24px;height:24px;object-fit:contain}.poi-type-preview .type-icon{width:100%;height:100%;display:grid;place-items:center}
+    .certainty-filter{margin:0 15px 8px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#0c120f;display:grid;grid-template-columns:1fr 108px;gap:8px;align-items:center}.certainty-filter label{color:var(--muted);font-size:11px}.certainty-filter select{padding:5px 7px;font-size:11px}.confirmed-choice{display:flex!important;align-items:center;gap:7px}.confirmed-choice input{width:auto}.confirmed-choice span{color:var(--muted);font-size:11px}
+    .stage-filter{margin:0 15px 8px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#0c120f;display:grid;grid-template-columns:1fr 148px;gap:8px;align-items:center}.stage-filter label{color:var(--muted);font-size:11px}.stage-filter select{padding:5px 7px;font-size:11px}.stage-range-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stage-range-grid .field{margin:0}.stage-list{display:grid;gap:6px;max-height:280px;overflow-y:auto}.stage-item{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:7px;padding:7px 8px;background:#0c120f;border:1px solid var(--line);border-radius:6px}.stage-order{color:var(--accent);font-size:11px;text-align:center}.stage-item input{padding:5px 7px}.stage-item .row{gap:4px}.stage-item .btn{padding:4px 6px;font-size:11px}
+    .route-layer{position:absolute;inset:0;z-index:3;overflow:visible;pointer-events:none}.task-list{display:grid;gap:7px;max-height:260px;overflow-y:scroll;scrollbar-gutter:stable}.task-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 9px;background:#0c120f;border:1px solid var(--line);border-radius:7px}.task-item strong{display:block;font-size:12px}.task-item small{display:block;color:var(--muted);font-size:11px}.task-item .row{gap:4px}.task-item .btn{padding:4px 6px;font-size:11px}.task-editor{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.task-editor h3{margin:0 0 8px;font-size:15px}.task-form-grid{display:grid;grid-template-columns:110px 1fr 1fr;gap:8px}.task-route-add{display:grid;grid-template-columns:1fr auto;gap:8px;margin:10px 0}.task-step-list{display:grid;gap:5px;max-height:220px;overflow-y:auto}.task-step{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:7px;align-items:center;padding:6px 8px;background:#0c120f;border:1px solid var(--line);border-radius:6px}.task-step select{padding:5px 7px;font-size:11px}.task-step-index{color:var(--accent);font-size:11px;text-align:center}.task-step.missing{border-color:rgba(240,123,112,.55)}.task-step small{grid-column:2/-1;color:#ffc2bd;font-size:10px}.task-step .row{gap:4px}.task-step .btn{padding:3px 6px;font-size:11px}.arrow-size-control{width:154px}.arrow-size-control label{display:flex;justify-content:space-between;gap:6px}.arrow-size-control input{accent-color:var(--accent);width:100%}.topbar{gap:12px}.map-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.top-actions{flex:0 1 auto;min-width:0;max-width:calc(100% - 180px);overflow-x:auto;scrollbar-width:thin;padding:2px 0}.route-filter{margin:0 15px 8px;padding:8px 9px;border:1px solid var(--line);border-radius:7px;background:#0c120f;display:grid;gap:7px}.route-filter-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px;color:var(--muted);font-size:11px}.route-filter-head strong{color:var(--ink);font-size:12px}.route-filter-head .row{gap:3px;flex-wrap:nowrap;justify-content:flex-end}.route-filter-head .btn{padding:3px 5px;font-size:10px}.route-filter-head #manageTaskLines{background:var(--accent);border-color:var(--accent);color:#15200f;font-weight:700}.route-filter-body{display:grid;gap:7px}.route-filter-body[hidden],.route-tag-tasks[hidden]{display:none!important}.route-filter-list{display:grid;gap:6px;max-height:190px;overflow-y:scroll;scrollbar-gutter:stable}.route-tag-group{border:1px solid rgba(234,244,237,.08);border-radius:6px;overflow:hidden}.route-tag-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px;border:0;background:#172119;color:var(--ink);padding:5px 7px;text-align:left;font-size:11px}.route-tag-head small{color:var(--muted)}.route-tag-tasks{display:grid;gap:3px;padding:3px}.route-filter-row{display:grid;grid-template-columns:auto 1fr;gap:7px;align-items:center;padding:5px 4px;border-radius:5px;font-size:11px}.route-filter-row:hover{background:#172119}.route-filter-row input{width:auto;accent-color:var(--accent)}.route-filter-row strong{display:block;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.route-filter-row small{display:block;color:var(--muted);font-size:10px}.route-filter-empty{color:var(--muted);font-size:11px;padding:3px 4px}.task-tag-field{margin-top:10px}.task-tag-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:7px}.task-tag-row input,.task-tag-row select{padding:7px 8px;font-size:12px}.online-connect-gate{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(4,8,6,.88);backdrop-filter:blur(9px)}.online-connect-gate[hidden]{display:none!important}.online-connect-card{width:min(420px,100%);padding:28px;border:1px solid var(--line);border-radius:14px;background:#121b16;box-shadow:0 24px 70px #000}.online-connect-card h2{font-size:24px;margin:6px 0 8px;letter-spacing:-.035em}.online-connect-card p{color:var(--muted);margin:0;line-height:1.55}.online-connect-spinner{width:25px;height:25px;border:3px solid rgba(214,238,98,.2);border-top-color:var(--accent);border-radius:50%;animation:online-spin .85s linear infinite;margin-bottom:14px}.online-connect-gate.failed .online-connect-spinner{display:none}.online-connect-gate.failed .online-connect-card{border-color:rgba(240,123,112,.45)}.online-connect-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}.online-connect-actions .retry{display:none}.online-connect-gate.failed .online-connect-actions .retry{display:inline-flex}@keyframes online-spin{to{transform:rotate(360deg)}}
+    /* 任务动线列表独立滚动，任务再多也不挤压左侧其它控制。 */
+    .route-filter{min-height:0;max-height:none;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+    .route-filter.has-task-scroll{height:clamp(120px,36vh,340px)}
+    .route-filter.route-panel-collapsed{height:auto!important}
+    .route-filter.route-panel-collapsed .route-filter-body{display:none!important}
+    .route-tag-group.route-tag-collapsed .route-tag-tasks{display:none!important}
+    .route-filter.has-task-scroll .route-filter-body{grid-template-rows:minmax(0,1fr)}
+    .route-filter-body{min-height:0;overflow:hidden}
+    .route-filter-list{min-height:0;max-height:none;height:100%;overflow-y:auto;overscroll-behavior:contain;padding-right:2px;align-content:start;align-items:start;grid-auto-rows:max-content}
+    .route-tag-group{min-height:0;align-self:start}
+    /* 大量任务时，管理弹窗固定为左右双栏：列表和编辑器各自滚动，避免整张弹窗难以操作。 */
+    #taskModal .dialog{width:min(980px,calc(100% - 40px));height:min(760px,calc(100vh - 40px));max-height:calc(100vh - 40px);overflow:hidden;display:flex;flex-direction:column}
+    #taskModal .dialog>p{margin-bottom:12px}
+    #taskManagerLayout{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,1.35fr);gap:14px;min-height:0;flex:1}
+    .task-list-pane{display:flex;flex-direction:column;min-width:0;min-height:0}
+    .task-item.editing{border-color:rgba(214,238,98,.65);background:#172119}
+    .task-list-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;margin-bottom:8px}
+    .task-list-toolbar input{padding:7px 8px;font-size:12px}.task-list-toolbar .btn{padding:6px 8px;font-size:11px}
+    #taskModal .task-list{min-height:0;max-height:none;flex:1;overflow-y:scroll;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:3px}
+    #taskModal .task-editor{min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:0 0 0 14px;border-top:0;border-left:1px solid var(--line)}
+    #taskModal .wizard-footer{flex:0 0 auto;margin-top:14px}
+    @media(max-width:780px){#taskModal .dialog{height:auto;overflow-y:auto}#taskManagerLayout{grid-template-columns:1fr;display:grid;flex:none;min-height:0}.task-list-pane{min-height:230px;max-height:230px}.task-list-toolbar{flex:0 0 auto}#taskModal .task-list{flex:1;min-height:0}#taskModal .task-editor{min-height:auto;overflow:visible;padding:14px 0 0;border-left:0;border-top:1px solid var(--line)}}
+    /* 框选标点的批量编辑器：每次只提交一个字段，避免误改其它设计信息。 */
+    #batchEditModal .dialog{width:min(560px,100%)}
+    .batch-edit-count{color:var(--accent)!important;font-weight:700;margin-bottom:12px!important}
+    .batch-edit-help{font-size:12px;line-height:1.5;margin:10px 0 0!important}
+    .batch-edit-value{min-height:52px}
+    .batch-edit-value textarea{width:100%;min-height:92px;resize:vertical;background:#0c120f;border:1px solid var(--line);border-radius:7px;padding:9px 10px;color:var(--ink);outline:none;font:inherit}
+    .batch-edit-value textarea:focus{border-color:var(--accent)}
+    .batch-tag-search{margin-bottom:7px}.batch-tag-choices{max-height:175px;overflow-y:auto;padding:2px;align-content:start}
+    .batch-duration-row{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:8px;align-items:end}.batch-duration-row .field{margin:0}
+    @media(max-width:560px){.batch-duration-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><small>WORLD DESIGN TOOL</small><h1>Worldmark</h1></div>
+      <div class="controls"><input id="search" placeholder="搜索地点或标签…" /><div class="row"><button class="btn primary" id="addMode">＋ 添加标点</button><button class="btn" id="fitView">定位视图</button></div></div>
+      <section class="route-filter" id="taskRouteFilter"><div class="route-filter-head"><strong>任务动线</strong><div class="row"><button class="btn primary" id="manageTaskLines">管理任务线</button><button class="btn" data-route-all="on">全开</button><button class="btn" data-route-all="off">全关</button><button class="btn" data-route-panel-toggle>收起</button></div></div><div class="route-filter-body" id="taskRouteBody"><div class="route-filter-list" id="taskRouteList"><span class="route-filter-empty">尚未创建任务线</span></div></div></section>
+      <div class="types-title"><span>标点类型</span><button class="btn" id="manageTypes">管理</button></div><div class="volume-range"><div class="volume-range-head"><span>显示体量范围</span><span class="volume-range-value" id="volumeRangeValue">A级 — D级</span></div><div class="dual-range"><div class="dual-range-track"></div><div class="dual-range-fill" id="volumeRangeFill"></div><input id="minVolume" type="range" min="0" max="3" step="1" value="0" aria-label="体量下限"/><input id="maxVolume" type="range" min="0" max="3" step="1" value="3" aria-label="体量上限"/></div><div class="range-scale"><span>A 级</span><span>D 级</span></div></div><div class="type-list" id="typeList"></div>
+    </aside>
+    <main class="main"><header class="topbar"><div class="map-name" id="mapTitle">未命名世界 <span>0 个兴趣点</span></div><div class="top-actions"><button class="btn" id="calibrateBtn">坐标标定</button><button class="btn" id="manageRegions">区域标签</button><button class="btn" id="manageTags">玩法标签</button><button class="btn" id="importBtn">导入</button><button class="btn" id="exportBtn">导出 JSON</button><button class="btn primary" id="settingsBtn">地图设置</button></div></header><div class="map" id="map" aria-label="开放世界标点地图"><div class="map-canvas" id="mapCanvas"><div class="grid"></div></div><div class="selection-box" id="selectionBox"></div><div class="poi-context-menu" id="poiContextMenu"><button class="btn" id="newPoiFromMenu">在此新建标点</button><button class="btn" id="copyPoiFromMenu">复制此标点</button><button class="btn" id="exportSelection">导出已框选标点</button></div></div><div class="detail" id="detail"></div><div class="map-tools"><button class="btn lock" id="sizeLock" aria-pressed="false">尺寸随缩放</button><button class="btn lock" id="labelToggle" aria-pressed="true">显示地点名称</button><div class="btn size-control"><label for="iconSize">固定图标 <span id="iconSizeValue">20px</span></label><input id="iconSize" type="range" min="4" max="64" value="20" /></div><div class="zoom-controls"><button class="btn" id="zoomOut" aria-label="缩小地图">−</button><button class="btn" id="zoomIn" aria-label="放大地图">＋</button></div><div class="zoom-readout" id="zoomReadout">缩放 100%</div><button class="btn lock" id="resetView">重置视图</button></div><div class="map-hint" id="hint">左键拖动框选；右键新建标点；中键平移视图</div></main>
+  </div>
+  <div class="modal" id="onboarding"><div class="dialog"><div class="wizard-step show" data-step="1"><div class="eyebrow">01 / 02 · 建立世界</div><h2>先给你的世界一张底图</h2><p>上传关卡俯视图、灰盒地图或概念地图；也可以先使用默认地形网格。</p><div class="field"><label for="worldName">世界 / 关卡名称</label><input id="worldName" value="阿斯特拉边境" /></div><div class="field"><label for="baseMap">上传底图（PNG、JPG、WebP）</label><input id="baseMap" type="file" accept="image/*" /></div><div class="field"><label for="setupImport">已有完整配置？直接导入 JSON</label><input id="setupImport" type="file" accept="application/json" /></div></div><div class="wizard-step" data-step="2"><div class="eyebrow">02 / 02 · 定义内容</div><h2>设置你的标点类型</h2><p>这些类型决定地图标记与筛选方式，后续可随时调整。</p><div id="setupTypes"></div><button class="btn" id="addType">＋ 新增类型</button></div><div class="wizard-footer"><span class="dots" id="dots"><b>●</b> ●</span><button class="btn primary" id="nextBtn">继续</button></div></div></div>
+  <div class="modal" id="poiModal" style="display:none"><div class="dialog"><div class="eyebrow">新建标点</div><h2>给这个地点命名</h2><div class="field"><label>名称</label><input id="poiName" placeholder="例如：风蚀哨塔" /></div><div class="field"><label>描述 / 设计备注</label><input id="poiNote" placeholder="例如：精英怪、俯瞰峡谷、可作为快速旅行点" /></div><div class="field"><label>类型</label><div class="poi-type-picker"><select id="poiType"></select><span class="poi-type-preview" id="poiTypePreview" aria-hidden="true"></span></div></div><div class="field"><label>区域标签</label><input id="regionSearch" placeholder="搜索区域标签…" aria-label="搜索区域标签" /><div class="region-summary" id="poiRegionSummary"></div><div class="tag-choices region-picker" id="poiRegions"></div></div><div class="coord-grid"><div class="field"><label>独特 ID（可空）</label><input id="poiUniqueId" placeholder="例如：QST-001" /></div><div class="field"><label>预期体验时长（秒，可空）</label><input id="poiDuration" type="number" min="0" step="1" placeholder="例如：90" /></div></div><div class="field"><label class="confirmed-choice"><input id="poiConfirmed" type="checkbox" /> 已确定 <span>该标点会高度确定投放</span></label></div><div class="field"><label>玩法类型标签</label><div class="tag-choices" id="poiTags"></div></div><div class="wizard-footer"><button class="btn" id="cancelPoi">取消</button><button class="btn primary" id="savePoi">保存地点</button></div></div></div>
+  <div class="modal" id="coordinateModal" style="display:none"><div class="dialog"><div class="eyebrow">地图坐标标定</div><h2>用两个地点建立相对坐标</h2><p>地图 X/Y 轴需与输入坐标轴方向一致。标定后，所有标点会自动换算坐标。</p><div class="field"><label>基准地点 A</label><select id="calPointA"></select></div><div class="coord-grid"><div class="field"><label>A · X</label><input id="calAX" type="number" step="any" placeholder="0" /></div><div class="field"><label>A · Y</label><input id="calAY" type="number" step="any" placeholder="0" /></div></div><div class="field"><label>基准地点 B</label><select id="calPointB"></select></div><div class="coord-grid"><div class="field"><label>B · X</label><input id="calBX" type="number" step="any" placeholder="100" /></div><div class="field"><label>B · Y</label><input id="calBY" type="number" step="any" placeholder="100" /></div></div><div class="wizard-footer"><button class="btn" id="cancelCalibration">取消</button><button class="btn primary" id="saveCalibration">应用标定</button></div></div></div><div class="toast" id="toast" aria-live="polite"></div>
+  <div class="modal" id="tagModal" style="display:none"><div class="dialog"><div class="eyebrow">全局配置</div><h2>管理玩法类型标签</h2><p>标签可被多个标点复用；删除标签将同时从全部标点中移除。</p><div class="row"><input id="newTagName" placeholder="例如：潜行、Boss 战、跑酷" /><button class="btn primary" id="addTag">新增</button></div><div class="tag-list" id="tagList"></div><div class="wizard-footer"><span></span><button class="btn" id="closeTags">完成</button></div></div></div>
+  <div class="modal" id="regionTagModal" style="display:none"><div class="dialog"><div class="eyebrow">全局配置</div><h2>管理区域标签</h2><p>区域标签可多选；删除标签将同时从全部标点中移除。</p><div class="row"><input id="newRegionTag" placeholder="例如：主城、北部山脉" /><button class="btn primary" id="addRegionTag">新增</button></div><div class="tag-list" id="regionTagList"></div><div class="wizard-footer"><span></span><button class="btn" id="closeRegions">完成</button></div></div></div>
+  <div class="modal" id="exportModal" style="display:none"><div class="dialog"><div class="eyebrow">JSON 导出</div><h2>选择导出范围</h2><p>完整配置会包含底图、类型、标签、坐标标定与所有标点；按区域导出仅包含带有所选区域标签的标点。</p><div class="field"><label>按区域标签导出</label><select id="exportRegionTag"></select></div><div class="wizard-footer"><button class="btn" id="closeExport">取消</button><div class="row"><button class="btn" id="exportAll">导出全部配置</button><button class="btn primary" id="exportRegion">导出所选区域</button></div></div></div></div>
+  <div class="modal" id="importModal" style="display:none"><div class="dialog"><div class="eyebrow">JSON 导入</div><h2>选择导入范围</h2><p>完整导入会替换当前看板配置；按区域导入会先清空本地含对应区域标签的标点，再导入同区域标点，从而同步删除。</p><p class="text-muted">区域协作文件会自动读取其中的区域标签；本地不存在该标签时会自动创建。</p><div class="wizard-footer"><button class="btn" id="closeImport">取消</button><div class="row"><button class="btn" id="importAll">导入全部配置</button><button class="btn primary" id="importRegion">导入区域协作文件</button></div></div><input id="importAllFile" type="file" accept="application/json" hidden /><input id="regionImportFile" type="file" accept="application/json" hidden /></div></div>
+  <script>
+    const deliveryForms=['任务','事件','收集','POI'],volumeGrades=['A','B','C','D'],defaults=[{id:'landmark',name:'地标 / 探索',icon:'⌂',layer:'POI',volume:'A'},{id:'combat',name:'战斗遭遇',icon:'⚔',layer:'事件',volume:'B'},{id:'quest',name:'任务节点',icon:'!',layer:'任务',volume:'B'},{id:'loot',name:'宝箱 / 收集',icon:'◆',layer:'收集',volume:'C'}];
+    let state={name:'阿斯特拉边境',image:null,imageSize:null,types:defaults,pois:[],activeType:'landmark',visibleTypes:defaults.map(t=>t.id),volumeRange:{min:'A',max:'D'},lockIconSize:false,iconSize:20,showLabels:false,confirmedViewMode:'normal',mainlineStages:[],activeMainlineStage:'',taskLines:[],taskTags:[],visibleTaskLines:[],routeArrowWidth:3,routeArrowHeadSize:9,taskRoutePanelCollapsed:false,taskRouteCollapsedTags:[],coordinateCalibration:null,gameplayTags:[],regionTags:[],regionFilter:[],multiSelected:[],boxSelectMode:false},pendingPos=null,editingPoiId=null,contextPos=null,contextPoiId=null,poiRegionSelection=[],view={zoom:1,x:0,y:0},preserveMapView=false,drag=null,mapLayout={left:0,top:0,width:1,height:1};
+    const $=s=>document.querySelector(s), map=$('#map'), mapCanvas=$('#mapCanvas'), markerLayer=Object.assign(document.createElement('div'),{id:'markerLayer',className:'marker-layer'});mapCanvas.after(markerLayer);
+    function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function typeBy(id){return state.types.find(t=>t.id===id)}
+    function typeVisual(t,cls='type-icon'){return t?.iconImage?`<img class="${cls}-image" src="${esc(t.iconImage)}" alt=""/>`:`<i class="${cls}">${esc(t?.icon||'●')}</i>`}
+    function cleanType(type){let {color,...clean}=type;return clean}
+    function deliveryForm(value){return deliveryForms.includes(value)?value:value==='事物层'?'收集':'POI'}
+    function volumeGrade(value,fallback='B'){return volumeGrades.includes(value)?value:fallback}
+    function normalizeVolumeRange(range){let min=volumeGrade(range?.min,'A'),max=volumeGrade(range?.max,'D');return volumeGrades.indexOf(min)<=volumeGrades.indexOf(max)?{min,max}:{min:max,max:min}}
+    function typeIsVisible(type){return !!type&&state.visibleTypes.includes(type.id)}
+    function normalizeTags(tags){return [...new Set((Array.isArray(tags)?tags:[]).filter(tag=>typeof tag==='string'&&tag.trim()).map(tag=>tag.trim()))]}
+    function createPoiId(){let id='';do{let random='';if(globalThis.crypto?.getRandomValues){let values=new Uint32Array(2);globalThis.crypto.getRandomValues(values);random=[...values].map(value=>value.toString(36)).join('')}else random=Math.random().toString(36).slice(2);id=`poi-${Date.now().toString(36)}-${random}`}while(state.pois.some(poi=>poi.id===id));return id}
+    function normalizeRegions(p){return normalizeTags(Array.isArray(p?.regions)?p.regions:(typeof p?.region==='string'&&p.region.trim()?[p.region]:[]))}
+    function matchesSearch(p,query){return `${p.name||''} ${p.note||''} ${p.uniqueId||''} ${(p.tags||[]).join(' ')} ${normalizeRegions(p).join(' ')}`.toLowerCase().includes(query)}
+    function poiCoordinates(p){let c=state.coordinateCalibration;if(!c||!p)return null;let a=state.pois.find(x=>x.id===c.aId),b=state.pois.find(x=>x.id===c.bId);if(!a||!b||a.x===b.x||a.y===b.y)return null;return{x:c.aX+(p.x-a.x)*(c.bX-c.aX)/(b.x-a.x),y:c.aY+(p.y-a.y)*(c.bY-c.aY)/(b.y-a.y)}}
+    function coordText(p){let c=poiCoordinates(p);return c?`X ${c.x.toFixed(2)} · Y ${c.y.toFixed(2)}`:'未标定坐标'}
+    function updateImageSize(source){if(!source)return;let image=new Image();image.onload=()=>{state.imageSize={width:image.naturalWidth,height:image.naturalHeight};render()};image.src=source}
+    function updateMapLayout(){let r=map.getBoundingClientRect(),width=r.width,height=r.height,left=0,top=0;if(state.imageSize?.width&&state.imageSize?.height){let scale=Math.min(width/state.imageSize.width,height/state.imageSize.height);width=state.imageSize.width*scale;height=state.imageSize.height*scale;left=(r.width-width)/2;top=(r.height-height)/2}mapLayout={left,top,width,height};Object.assign(mapCanvas.style,{left:left+'px',top:top+'px',width:width+'px',height:height+'px'})}
+    function render(){
+      updateMapLayout();
+      $('#mapTitle').innerHTML=`${esc(state.name)} <span>${state.pois.length} 个兴趣点</span>`;
+      let volumeRange=normalizeVolumeRange(state.volumeRange);state.volumeRange=volumeRange;let minIndex=volumeGrades.indexOf(volumeRange.min),maxIndex=volumeGrades.indexOf(volumeRange.max);$('#minVolume').value=minIndex;$('#maxVolume').value=maxIndex;$('#volumeRangeValue').textContent=`${volumeRange.min}级 — ${volumeRange.max}级`;let fill=$('#volumeRangeFill');fill.style.left=`${minIndex/(volumeGrades.length-1)*100}%`;fill.style.width=`${(maxIndex-minIndex)/(volumeGrades.length-1)*100}%`;
+      $('#typeList').innerHTML=deliveryForms.map(form=>{let types=state.types.filter(t=>deliveryForm(t.layer)===form);if(!types.length)return '';let allVisible=types.every(t=>state.visibleTypes.includes(t.id));return `<section class="type-group"><div class="type-group-head"><span>投放形式 · ${form}</span><button class="btn" data-form-toggle="${form}" aria-pressed="${allVisible}">${allVisible?'隐藏全部':'显示全部'}</button></div><div class="type-group-items">${types.map(t=>`<div class="type-row"><input class="type-toggle" type="checkbox" data-visible="${t.id}" ${state.visibleTypes.includes(t.id)?'checked':''} aria-label="显示 ${esc(t.name)}"/><button class="type ${state.activeType===t.id?'active':''}" data-type="${t.id}">${typeVisual(t)}<span>${esc(t.name)}</span><span class="volume">${volumeGrade(t.volume)}级</span><span class="count" data-visible-type-count="${esc(t.id)}">0</span></button></div>`).join('')}</div></section>`}).join('');
+      mapCanvas.querySelectorAll('.marker').forEach(e=>e.remove()); state.pois.filter(p=>typeIsVisible(typeBy(p.type))&&(state.confirmedViewMode!=='hide'||p.confirmed)&&(!(state.gameplayFilter||[]).length||(p.tags||[]).some(tag=>state.gameplayFilter.includes(tag)))&&(!(state.regionFilter||[]).length||normalizeRegions(p).some(tag=>state.regionFilter.includes(tag)))).forEach(p=>{let t=typeBy(p.type);let el=document.createElement('button');el.className='marker '+(state.selected===p.id?'active':'')+(state.multiSelected.includes(p.id)?' multi-selected':'')+(!p.confirmed&&state.confirmedViewMode==='dim'?' tentative':'');el.style.left=p.x+'%';el.style.top=p.y+'%';el.style.setProperty('--icon-size',state.iconSize+'px');el.style.setProperty('--label-size',Math.max(9,Math.round(state.iconSize*.55))+'px');el.style.setProperty('--icon-scale',state.lockIconSize?1/view.zoom:1);el.dataset.poi=p.id;el.innerHTML=(t?.iconImage?`<img class="marker-image" src="${esc(t.iconImage)}" alt=""/>`:`<i class="marker-icon">${esc(t?.icon||'●')}</i>`)+(state.showLabels?`<span class="marker-label">${esc(p.name)}</span>`:'');el.setAttribute('aria-label',p.name);mapCanvas.append(el)});
+      $('#hint').textContent=state.activeType?`当前：${typeBy(state.activeType)?.name} · 左键拖动框选；右键新建；中键平移`:'左键拖动框选；右键新建；中键平移';
+      if(state.image){mapCanvas.classList.add('has-image');mapCanvas.style.backgroundImage=`url("${state.image}")`}else{mapCanvas.classList.remove('has-image');mapCanvas.style.backgroundImage=''}
+      mapCanvas.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.zoom})`;$('#zoomReadout').textContent='缩放 '+Math.round(view.zoom*100)+'%';$('#sizeLock').textContent=state.lockIconSize?'图标尺寸锁定':'尺寸随缩放';$('#sizeLock').setAttribute('aria-pressed',String(state.lockIconSize));$('#labelToggle').textContent=state.showLabels?'隐藏地点名称':'显示地点名称';$('#labelToggle').setAttribute('aria-pressed',String(state.showLabels));$('#iconSize').value=state.iconSize;$('#iconSizeValue').textContent=state.iconSize+'px';
+    }
+    function setupEditor(){ $('#setupTypes').innerHTML=state.types.map((t,i)=>`<div class="type-editor"><input value="${esc(t.name)}" data-name="${i}" aria-label="类型名称"/><span class="icon-preview">${t.iconImage?`<img src="${esc(t.iconImage)}" alt="${esc(t.name)}"/>`:esc(t.icon||'●')}</span><input type="file" accept="image/*" data-image="${i}" aria-label="上传自定义图标"/><select data-layer="${i}" aria-label="投放形式">${deliveryForms.map(form=>`<option ${deliveryForm(t.layer)===form?'selected':''}>${form}</option>`).join('')}</select><select data-volume="${i}" aria-label="标点体量">${volumeGrades.map(grade=>`<option value="${grade}" ${volumeGrade(t.volume)===grade?'selected':''}>${grade}级</option>`).join('')}</select><span class="type-order-controls"><button type="button" class="btn" data-move-type="${i}" data-direction="-1" aria-label="上移 ${esc(t.name)}" ${i===0?'disabled':''}>↑</button><button type="button" class="btn" data-move-type="${i}" data-direction="1" aria-label="下移 ${esc(t.name)}" ${i===state.types.length-1?'disabled':''}>↓</button></span><button class="btn danger" data-remove="${i}" ${state.types.length<2?'disabled':''}>×</button></div>`).join('') }
+    function showToast(msg){let t=$('#toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',1800)}
+    function applyConfig(data){if(!Array.isArray(data.types)||!Array.isArray(data.pois))throw new Error('invalid config');let typeIds=data.types.map(t=>t.id),tags=normalizeTags([...(Array.isArray(data.gameplayTags)?data.gameplayTags:[]),...data.pois.flatMap(p=>p.tags||[])]),regionTags=normalizeTags([...(Array.isArray(data.regionTags)?data.regionTags:[]),...data.pois.flatMap(p=>normalizeRegions(p))]);state={...state,...data,types:data.types.map(t=>({...cleanType(t),icon:t.icon||'●',iconImage:t.iconImage||null,layer:deliveryForm(t.layer),volume:volumeGrade(t.volume)})),pois:data.pois.map(({region,...p})=>({...p,regions:normalizeRegions({...p,region}),uniqueId:p.uniqueId||'',tags:normalizeTags(p.tags),confirmed:!!p.confirmed,duration:p.duration!=null&&p.duration!==''&&Number.isFinite(Number(p.duration))?Number(p.duration):null})),activeType:data.activeType||typeIds[0],visibleTypes:Array.isArray(data.visibleTypes)?data.visibleTypes.filter(id=>typeIds.includes(id)):typeIds,volumeRange:normalizeVolumeRange(data.volumeRange),lockIconSize:!!data.lockIconSize,iconSize:Math.max(2,Math.min(64,Number(data.iconSize)||20)),showLabels:data.showLabels!==false,confirmedViewMode:['normal','dim','hide'].includes(data.confirmedViewMode)?data.confirmedViewMode:'normal',imageSize:data.imageSize||null,coordinateCalibration:data.coordinateCalibration||null,gameplayTags:tags,regionTags,selected:null,multiSelected:[],boxSelectMode:false};if(state.image&&!state.imageSize)updateImageSize(state.image);resetMapView()}
+    $('#nextBtn').onclick=()=>{if(state.step===1){state.name=$('#worldName').value.trim()||'未命名世界';let f=$('#baseMap').files[0];if(f){let r=new FileReader();r.onload=()=>{state.image=r.result;updateImageSize(state.image);state.step=2;$('.wizard-step.show').classList.remove('show');document.querySelector('[data-step="2"]').classList.add('show');$('#nextBtn').textContent='开始布点';$('#dots').innerHTML='● <b>●</b>';setupEditor()};r.readAsDataURL(f)}else{state.step=2;$('.wizard-step.show').classList.remove('show');document.querySelector('[data-step="2"]').classList.add('show');$('#nextBtn').textContent='开始布点';$('#dots').innerHTML='● <b>●</b>';setupEditor()}}else{$('#onboarding').style.display='none';render()}};
+    $('#addType').onclick=()=>{let type={id:'type-'+Date.now(),name:'新标点类型',icon:'●',layer:'POI',volume:'B'};state.types.push(type);state.visibleTypes.push(type.id);setupEditor()};
+    $('#setupTypes').onclick=e=>{let move=e.target.closest('[data-move-type]');if(move){let i=Number(move.dataset.moveType),next=i+Number(move.dataset.direction);if(Number.isInteger(i)&&next>=0&&next<state.types.length){[state.types[i],state.types[next]]=[state.types[next],state.types[i]];setupEditor()}return}let remove=e.target.closest('[data-remove]');if(!remove)return;let i=Number(remove.dataset.remove);if(!Number.isInteger(i))return;let removed=state.types.splice(i,1)[0];state.visibleTypes=state.visibleTypes.filter(id=>id!==removed.id);if(state.activeType===removed.id)state.activeType=state.types[0]?.id||null;setupEditor()};
+    $('#setupTypes').oninput=e=>{let i=e.target.dataset.name??e.target.dataset.layer??e.target.dataset.volume;if(i!==undefined){if(e.target.dataset.name!==undefined)state.types[i].name=e.target.value;else if(e.target.dataset.layer!==undefined)state.types[i].layer=e.target.value;else state.types[i].volume=volumeGrade(e.target.value)}};
+    $('#setupTypes').onchange=e=>{let layer=e.target.dataset.layer,volume=e.target.dataset.volume;if(layer!==undefined){state.types[layer].layer=e.target.value;return}if(volume!==undefined){state.types[volume].volume=volumeGrade(e.target.value);return}let i=e.target.dataset.image,f=e.target.files?.[0];if(i===undefined||!f)return;let reader=new FileReader();reader.onload=()=>{state.types[i].iconImage=reader.result;setupEditor();render();showToast('自定义图标已更新')};reader.readAsDataURL(f)};
+    function rawMapPoint(e){let r=map.getBoundingClientRect();return{x:(e.clientX-r.left-mapLayout.left-view.x)/view.zoom,y:(e.clientY-r.top-mapLayout.top-view.y)/view.zoom}}
+    function mapPoint(e){let p=rawMapPoint(e);return{x:+Math.max(0,Math.min(100,p.x/mapLayout.width*100)).toFixed(2),y:+Math.max(0,Math.min(100,p.y/mapLayout.height*100)).toFixed(2)}}
+    function isInsideMapContent(e){let p=rawMapPoint(e);return p.x>=0&&p.x<=mapLayout.width&&p.y>=0&&p.y<=mapLayout.height}
+    function renderPoiTypePreview(){let type=typeBy($('#poiType').value),preview=$('#poiTypePreview');if(!preview)return;preview.innerHTML=type?typeVisual(type,'type-icon'):'';preview.title=type?.name||''}
+    function fillPoiTypes(selectedType){$('#poiType').innerHTML=state.types.map(t=>`<option value="${t.id}" ${t.id===selectedType?'selected':''}>${esc(t.name)} · ${esc(t.iconImage?'图片图标':(t.icon||'●'))}</option>`).join('');renderPoiTypePreview()}
+    $('#poiType').onchange=renderPoiTypePreview;
+    function renderPoiTagChoices(selected=[]){$('#poiTags').innerHTML=state.gameplayTags.length?state.gameplayTags.map(tag=>`<label class="tag-choice"><input type="checkbox" value="${esc(tag)}" ${selected.includes(tag)?'checked':''}/>${esc(tag)}</label>`).join(''):'<span class="text-muted">暂无标签，可从右上角“玩法标签”新增。</span>'}
+    function renderPoiRegionChoices(selected){if(selected!==undefined)poiRegionSelection=normalizeTags(selected);let query=$('#regionSearch').value.trim().toLowerCase(),matches=state.regionTags.filter(tag=>tag.toLowerCase().includes(query)),summary=poiRegionSelection.length?`已选 ${poiRegionSelection.length} 个：${poiRegionSelection.slice(0,4).join(' · ')}${poiRegionSelection.length>4?' …':''}`:'未选择区域标签';$('#poiRegionSummary').textContent=summary;$('#poiRegions').innerHTML=state.regionTags.length?(matches.length?matches.map(tag=>`<label class="tag-choice"><input type="checkbox" value="${esc(tag)}" ${poiRegionSelection.includes(tag)?'checked':''}/>${esc(tag)}</label>`).join(''):'<span class="text-muted">没有匹配的区域标签。</span>'):'<span class="text-muted">暂无区域标签，可从右上角“区域标签”新增。</span>'}
+    $('#regionSearch').oninput=()=>renderPoiRegionChoices();$('#poiRegions').onchange=e=>{let input=e.target.closest('input[type="checkbox"]');if(!input)return;poiRegionSelection=input.checked?normalizeTags([...poiRegionSelection,input.value]):poiRegionSelection.filter(tag=>tag!==input.value);renderPoiRegionChoices()};
+    function openPoiForm(pos){if(!state.activeType)return;editingPoiId=null;state.pendingPos=pos;fillPoiTypes(state.activeType);$('#poiName').value='';$('#poiNote').value='';$('#poiUniqueId').value='';$('#poiDuration').value='';$('#poiConfirmed').checked=false;$('#regionSearch').value='';renderPoiRegionChoices([]);renderPoiTagChoices();$('#poiModal .eyebrow').textContent='新建标点';$('#poiModal h2').textContent='给这个地点命名';$('#savePoi').textContent='保存地点';$('#poiModal').style.display='flex';$('#poiName').focus()}
+    function openPoiEditor(id){let p=state.pois.find(x=>x.id===id);if(!p)return;editingPoiId=id;fillPoiTypes(p.type);$('#poiName').value=p.name;$('#poiNote').value=p.note||'';$('#poiUniqueId').value=p.uniqueId||'';$('#poiDuration').value=p.duration??'';$('#poiConfirmed').checked=!!p.confirmed;$('#regionSearch').value='';renderPoiRegionChoices(normalizeRegions(p));renderPoiTagChoices(p.tags||[]);$('#poiModal .eyebrow').textContent='编辑标点';$('#poiModal h2').textContent='更新地点信息';$('#savePoi').textContent='保存修改';$('#poiModal').style.display='flex';$('#poiName').focus()}
+    function updateSelectionBox(x1,y1,x2,y2){let r=map.getBoundingClientRect(),box=$('#selectionBox');Object.assign(box.style,{display:'block',left:Math.min(x1,x2)-r.left+'px',top:Math.min(y1,y2)-r.top+'px',width:Math.abs(x2-x1)+'px',height:Math.abs(y2-y1)+'px'})}
+    function selectInBox(a,b){let x1=Math.min(a.x,b.x),x2=Math.max(a.x,b.x),y1=Math.min(a.y,b.y),y2=Math.max(a.y,b.y);state.multiSelected=state.pois.filter(p=>{let x=p.x/100*mapLayout.width,y=p.y/100*mapLayout.height;return typeIsVisible(typeBy(p.type))&&x>=x1&&x<=x2&&y>=y1&&y<=y2}).map(p=>p.id);state.selected=null;$('#detail').classList.remove('show');render();showToast(state.multiSelected.length?`已框选 ${state.multiSelected.length} 个标点，可拖动或按 Delete 删除`:'框选区域内没有可见标点')}
+    function moveMarkerNodes(ids){let wanted=new Set(ids);markerLayer.querySelectorAll('.marker').forEach(node=>{if(!wanted.has(node.dataset.poi))return;let p=state.pois.find(item=>item.id===node.dataset.poi);if(p){node.style.left=(mapLayout.left+view.x+Number(p.x)/100*mapLayout.width*view.zoom)+'px';node.style.top=(mapLayout.top+view.y+Number(p.y)/100*mapLayout.height*view.zoom)+'px'}})}
+    map.addEventListener('pointerdown',e=>{if((e.button!==0&&e.button!==1)||e.target.closest('#poiContextMenu'))return;e.preventDefault();$('#poiContextMenu').style.display='none';let middle=e.button===1,m=middle?null:e.target.closest('.marker'),ids=m&&state.multiSelected.includes(m.dataset.poi)?[...state.multiSelected]:[],kind=middle?'map':m?(ids.length>1?'multi-marker':'marker'):isInsideMapContent(e)?'box':'none',points=ids.map(id=>{let p=state.pois.find(x=>x.id===id);return{id,x:Number(p.x),y:Number(p.y)}}),bounds=points.length?{minX:Math.min(...points.map(p=>p.x)),maxX:Math.max(...points.map(p=>p.x)),minY:Math.min(...points.map(p=>p.y)),maxY:Math.max(...points.map(p=>p.y))}:null;drag={kind,middle,id:m?.dataset.poi,ids,points,bounds,startX:e.clientX,startY:e.clientY,startMap:(kind==='box'||kind==='multi-marker')?rawMapPoint(e):null,originX:view.x,originY:view.y,moved:false};if(kind==='box')updateSelectionBox(e.clientX,e.clientY,e.clientX,e.clientY);map.setPointerCapture(e.pointerId)});
+    map.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;if(drag.kind==='map'&&drag.moved){view.x=drag.originX+dx;view.y=drag.originY+dy;mapCanvas.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.zoom})`;moveMarkerNodes(state.pois.map(p=>p.id))}else if(drag.kind==='marker'&&drag.moved){let p=state.pois.find(x=>x.id===drag.id);Object.assign(p,mapPoint(e));moveMarkerNodes([drag.id])}else if(drag.kind==='multi-marker'&&drag.moved){let now=rawMapPoint(e),moveX=(now.x-drag.startMap.x)/mapLayout.width*100,moveY=(now.y-drag.startMap.y)/mapLayout.height*100,b=drag.bounds;moveX=Math.max(-b.minX,Math.min(100-b.maxX,moveX));moveY=Math.max(-b.minY,Math.min(100-b.maxY,moveY));drag.points.forEach(point=>{let p=state.pois.find(x=>x.id===point.id);if(p){p.x=+(point.x+moveX).toFixed(2);p.y=+(point.y+moveY).toFixed(2)}});moveMarkerNodes(drag.ids)}else if(drag.kind==='box')updateSelectionBox(drag.startX,drag.startY,e.clientX,e.clientY)});
+    map.addEventListener('pointerup',e=>{if(!drag)return;let d=drag;drag=null;if(d.middle){render();return}if(d.kind==='box'){ $('#selectionBox').style.display='none';if(d.moved)selectInBox(d.startMap,rawMapPoint(e));else if(state.selected||state.multiSelected.length)clearSelection();else render();return}if(!d.moved){if(d.kind==='marker')selectPoi(d.id);else if(d.kind==='none'&&(state.selected||state.multiSelected.length))clearSelection();return}if(d.kind==='marker'||d.kind==='multi-marker')render()});
+    map.addEventListener('contextmenu',e=>{e.preventDefault();let r=map.getBoundingClientRect(),menu=$('#poiContextMenu'),marker=e.target.closest('.marker'),canCreate=!marker&&isInsideMapContent(e)&&!!state.activeType,canCopy=!!marker&&state.selected===marker.dataset.poi,canExport=state.multiSelected.length>0;contextPos=canCreate?mapPoint(e):null;contextPoiId=canCopy?marker.dataset.poi:null;$('#newPoiFromMenu').style.display=canCreate?'block':'none';$('#copyPoiFromMenu').style.display=canCopy?'block':'none';$('#exportSelection').style.display=canExport?'block':'none';if(!canCreate&&!canCopy&&!canExport){menu.style.display='none';return}menu.style.left=Math.max(5,e.clientX-r.left)+'px';menu.style.top=Math.max(5,e.clientY-r.top)+'px';menu.style.display='block'});
+    map.addEventListener('auxclick',e=>e.preventDefault());
+    map.addEventListener('wheel',e=>{e.preventDefault();let r=map.getBoundingClientRect(),old=view.zoom,next=Math.max(.35,Math.min(12,old*(e.deltaY<0?1.2:.83))),px=e.clientX-r.left-mapLayout.left,py=e.clientY-r.top-mapLayout.top;view.x=px-(px-view.x)*(next/old);view.y=py-(py-view.y)*(next/old);view.zoom=next;render()},{passive:false});
+    function clearSelection(){state.selected=null;state.multiSelected=[];$('#detail').classList.remove('show');$('#poiContextMenu').style.display='none';render()}
+    function deletePoi(id=state.selected){let ids=id?[id]:[...state.multiSelected];if(!ids.length)return;state.pois=state.pois.filter(x=>!ids.includes(x.id));state.selected=null;state.multiSelected=[];$('#detail').classList.remove('show');render();showToast(`已删除 ${ids.length} 个标点`)}
+    function copyPoi(id){let p=state.pois.find(x=>x.id===id);if(!p)return;let copy={...p,id:createPoiId(),name:p.name+'（副本）',uniqueId:'',tags:[...(p.tags||[])],x:Math.min(99,Number(p.x)+1),y:Math.min(99,Number(p.y)+1)};state.pois.push(copy);selectPoi(copy.id);showToast('标点已复制，独特 ID 已清空')}
+    function selectPoi(id){state.selected=id;state.multiSelected=[];let p=state.pois.find(x=>x.id===id);if(!p)return;let t=typeBy(p.type),tags=(p.tags||[]).length?(p.tags||[]).map(esc).join(' · '):'无',regions=normalizeRegions(p).length?normalizeRegions(p).map(esc).join(' · '):'未设置';$('#detail').innerHTML=`<h3>${esc(p.name)}</h3><p>${typeVisual(t)} ${esc(t?.name||'未分类')} · 投放形式：${esc(deliveryForm(t?.layer))} · 体量：${esc(volumeGrade(t?.volume))}级</p><p>${esc(p.note||'暂无设计备注')}</p><p>区域标签：${regions}<br>独特 ID：${esc(p.uniqueId||'未设置')}<br>玩法标签：${tags}<br>已确定：${p.confirmed?'是':'否'}<br>预期体验：${p.duration==null?'未设置':esc(p.duration+' 秒')}</p><p>坐标：${coordText(p)}</p><div class="row"><button class="btn" id="copyPoi">复制</button><button class="btn" id="editPoi">编辑</button><button class="btn danger" id="deletePoi">删除</button><button class="btn" id="closeDetail">关闭</button></div>`;$('#detail').classList.add('show');$('#copyPoi').onclick=()=>copyPoi(id);$('#editPoi').onclick=()=>openPoiEditor(id);$('#deletePoi').onclick=()=>deletePoi(id);$('#closeDetail').onclick=clearSelection;render()}
+    $('#savePoi').onclick=()=>{let name=$('#poiName').value.trim(),durationRaw=$('#poiDuration').value.trim(),duration=durationRaw===''?null:Number(durationRaw),uniqueId=$('#poiUniqueId').value.trim(),tags=[...document.querySelectorAll('#poiTags input:checked')].map(x=>x.value),regions=normalizeTags(poiRegionSelection);if(!name){$('#poiName').focus();return}if(duration!==null&&(!Number.isFinite(duration)||duration<0)){showToast('预期体验时长须为非负秒数');return}if(uniqueId&&state.pois.some(p=>p.uniqueId===uniqueId&&p.id!==editingPoiId)){showToast('独特 ID 已被其他标点使用');return}let data={name,note:$('#poiNote').value.trim(),type:$('#poiType').value,regions,uniqueId,tags,confirmed:$('#poiConfirmed').checked,duration};let id=editingPoiId;if(id){Object.assign(state.pois.find(p=>p.id===id),data)}else{id=createPoiId();state.pois.push({id,...data,...state.pendingPos})}if(!state.visibleTypes.includes(data.type))state.visibleTypes.push(data.type);editingPoiId=null;$('#poiModal').style.display='none';selectPoi(id);showToast('地点信息已保存')};$('#cancelPoi').onclick=()=>{editingPoiId=null;$('#poiModal').style.display='none'};
+    function updateVolumeRange(changed){let min=Math.max(0,Math.min(volumeGrades.length-1,Number($('#minVolume').value))),max=Math.max(0,Math.min(volumeGrades.length-1,Number($('#maxVolume').value)));if(min>max){if(changed==='min')max=min;else min=max}state.volumeRange={min:volumeGrades[min],max:volumeGrades[max]};render()}
+    $('#minVolume').oninput=()=>updateVolumeRange('min');$('#maxVolume').oninput=()=>updateVolumeRange('max');$('#typeList').onclick=e=>{let formToggle=e.target.closest('[data-form-toggle]');if(formToggle){let form=formToggle.dataset.formToggle,ids=state.types.filter(t=>deliveryForm(t.layer)===form).map(t=>t.id),allVisible=ids.every(id=>state.visibleTypes.includes(id));state.visibleTypes=allVisible?state.visibleTypes.filter(id=>!ids.includes(id)):[...new Set([...state.visibleTypes,...ids])];render();return}let toggle=e.target.closest('[data-visible]');if(toggle){state.visibleTypes=state.types.filter(t=>document.querySelector(`[data-visible="${t.id}"]`).checked).map(t=>t.id);render();return}let b=e.target.closest('[data-type]');if(b){state.activeType=b.dataset.type;if(!state.visibleTypes.includes(state.activeType))state.visibleTypes.push(state.activeType);render()}};$('#search').onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();let query=e.target.value.trim().toLowerCase();if(!query){showToast('请输入要搜索的名称、标签或独特 ID');return}let match=state.pois.find(p=>matchesSearch(p,query));if(!match){showToast('没有匹配的标点');return}let type=typeBy(match.type),grade=volumeGrade(type?.volume),range=normalizeVolumeRange(state.volumeRange),index=volumeGrades.indexOf(grade);state.volumeRange={min:volumeGrades[Math.min(volumeGrades.indexOf(range.min),index)],max:volumeGrades[Math.max(volumeGrades.indexOf(range.max),index)]};if(!state.visibleTypes.includes(match.type))state.visibleTypes.push(match.type);selectPoi(match.id)};
+    function resetMapView(){if(preserveMapView)return;view={zoom:1,x:0,y:0};render()};function changeZoom(factor){let r=map.getBoundingClientRect(),old=view.zoom,next=Math.max(.35,Math.min(12,old*factor)),px=r.width/2-mapLayout.left,py=r.height/2-mapLayout.top;view.x=px-(px-view.x)*(next/old);view.y=py-(py-view.y)*(next/old);view.zoom=next;render()}
+    function openCalibration(){if(state.pois.length<2){showToast('至少需要两个标点才能标定坐标');return}let c=state.coordinateCalibration;let options=state.pois.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');$('#calPointA').innerHTML=options;$('#calPointB').innerHTML=options;$('#calPointA').value=c?.aId||state.pois[0].id;$('#calPointB').value=c?.bId||state.pois[1].id;$('#calAX').value=c?.aX??0;$('#calAY').value=c?.aY??0;$('#calBX').value=c?.bX??100;$('#calBY').value=c?.bY??100;$('#coordinateModal').style.display='flex'}
+    $('#calibrateBtn').onclick=openCalibration;$('#cancelCalibration').onclick=()=>$('#coordinateModal').style.display='none';$('#saveCalibration').onclick=()=>{let aId=$('#calPointA').value,bId=$('#calPointB').value,aX=Number($('#calAX').value),aY=Number($('#calAY').value),bX=Number($('#calBX').value),bY=Number($('#calBY').value),a=state.pois.find(p=>p.id===aId),b=state.pois.find(p=>p.id===bId);if(aId===bId||![aX,aY,bX,bY].every(Number.isFinite)||!a||!b||a.x===b.x||a.y===b.y){showToast('请选择两个不同且不在同一横/纵轴的地点，并填入有效坐标');return}state.coordinateCalibration={aId,bId,aX,aY,bX,bY};$('#coordinateModal').style.display='none';if(state.selected)selectPoi(state.selected);else render();showToast('相对坐标标定已应用')};
+    $('#zoomIn').onclick=()=>changeZoom(1.2);$('#zoomOut').onclick=()=>changeZoom(1/1.2);$('#resetView').onclick=resetMapView;$('#sizeLock').onclick=()=>{state.lockIconSize=!state.lockIconSize;render();showToast(state.lockIconSize?'图标尺寸已锁定':'图标尺寸将随地图缩放')};$('#labelToggle').onclick=()=>{state.showLabels=!state.showLabels;render()};$('#iconSize').oninput=e=>{state.iconSize=Number(e.target.value);render()};
+    $('#addMode').onclick=()=>{render();showToast('左键拖动框选；右键点击空白处新建；中键拖动平移')};$('#fitView').onclick=()=>{state.selected=null;$('#detail').classList.remove('show');resetMapView()};
+    function renderTagManager(){$('#tagList').innerHTML=state.gameplayTags.length?state.gameplayTags.map(tag=>`<div class="tag-item"><input value="${esc(tag)}" aria-label="玩法标签名称"/><div class="row"><button class="btn" data-rename-tag="${esc(tag)}">改名</button><button class="btn danger" data-remove-tag="${esc(tag)}">删除</button></div></div>`).join(''):'<div class="empty">尚未创建玩法标签</div>'}
+    $('#manageTags').onclick=()=>{renderTagManager();$('#newTagName').value='';$('#tagModal').style.display='flex';$('#newTagName').focus()};$('#closeTags').onclick=()=>$('#tagModal').style.display='none';$('#addTag').onclick=()=>{let tag=$('#newTagName').value.trim();if(!tag)return;if(state.gameplayTags.includes(tag)){showToast('该玩法标签已存在');return}state.gameplayTags.push(tag);$('#newTagName').value='';renderTagManager();showToast('玩法标签已新增')};$('#tagList').onclick=e=>{let rename=e.target.closest('[data-rename-tag]'),remove=e.target.closest('[data-remove-tag]');if(rename){let oldTag=rename.dataset.renameTag,newTag=rename.closest('.tag-item').querySelector('input').value.trim();if(!newTag||newTag===oldTag)return;if(state.gameplayTags.includes(newTag)){showToast('该玩法标签已存在');return}state.gameplayTags=state.gameplayTags.map(t=>t===oldTag?newTag:t);state.pois.forEach(p=>p.tags=(p.tags||[]).map(t=>t===oldTag?newTag:t));renderTagManager();render();showToast('玩法标签已改名');return}if(remove){let tag=remove.dataset.removeTag;state.gameplayTags=state.gameplayTags.filter(t=>t!==tag);state.pois.forEach(p=>p.tags=(p.tags||[]).filter(t=>t!==tag));renderTagManager();render();showToast('玩法标签已删除')}};
+    function renderRegionTagManager(){$('#regionTagList').innerHTML=state.regionTags.length?state.regionTags.map(tag=>`<div class="tag-item"><input value="${esc(tag)}" aria-label="区域标签名称"/><div class="row"><button class="btn" data-rename-region="${esc(tag)}">改名</button><button class="btn danger" data-remove-region="${esc(tag)}">删除</button></div></div>`).join(''):'<div class="empty">尚未创建区域标签</div>'}
+    $('#manageRegions').onclick=()=>{renderRegionTagManager();$('#newRegionTag').value='';$('#regionTagModal').style.display='flex';$('#newRegionTag').focus()};$('#closeRegions').onclick=()=>$('#regionTagModal').style.display='none';$('#addRegionTag').onclick=()=>{let tag=$('#newRegionTag').value.trim();if(!tag)return;if(state.regionTags.includes(tag)){showToast('该区域标签已存在');return}state.regionTags.push(tag);$('#newRegionTag').value='';renderRegionTagManager();render();showToast('区域标签已新增')};$('#regionTagList').onclick=e=>{let rename=e.target.closest('[data-rename-region]'),remove=e.target.closest('[data-remove-region]');if(rename){let oldTag=rename.dataset.renameRegion,newTag=rename.closest('.tag-item').querySelector('input').value.trim();if(!newTag||newTag===oldTag)return;if(state.regionTags.includes(newTag)){showToast('该区域标签已存在');return}state.regionTags=state.regionTags.map(t=>t===oldTag?newTag:t);state.pois.forEach(p=>p.regions=normalizeRegions(p).map(t=>t===oldTag?newTag:t));renderRegionTagManager();render();showToast('区域标签已改名');return}if(remove){let tag=remove.dataset.removeRegion;state.regionTags=state.regionTags.filter(t=>t!==tag);state.pois.forEach(p=>p.regions=normalizeRegions(p).filter(t=>t!==tag));renderRegionTagManager();render();showToast('区域标签已删除')}};
+    $('#manageTypes').onclick=()=>{$('#onboarding').style.display='flex';state.step=2;document.querySelectorAll('.wizard-step').forEach(x=>x.classList.remove('show'));document.querySelector('[data-step="2"]').classList.add('show');$('#nextBtn').textContent='完成设置';$('#dots').innerHTML='● <b>●</b>';setupEditor()};
+    $('#settingsBtn').onclick=()=>{$('#onboarding').style.display='flex';state.step=1;document.querySelectorAll('.wizard-step').forEach(x=>x.classList.remove('show'));document.querySelector('[data-step="1"]').classList.add('show');$('#worldName').value=state.name;$('#nextBtn').textContent='继续';$('#dots').innerHTML='<b>●</b> ●'};
+    function downloadJson(data,name){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+    function exportSelectedPois(){let pois=state.pois.filter(p=>state.multiSelected.includes(p.id)),typeIds=[...new Set(pois.map(p=>p.type))],types=state.types.filter(t=>typeIds.includes(t.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(tag=>pois.some(p=>(p.tags||[]).includes(tag))),regionTags=state.regionTags.filter(tag=>pois.some(p=>normalizeRegions(p).includes(tag)));if(!pois.length){showToast('请先框选至少一个标点');return}downloadJson({format:'worldmark-poi-selection',version:1,exportedAt:new Date().toISOString(),types,gameplayTags,regionTags,pois},'worldmark-poi-selection.json');$('#poiContextMenu').style.display='none';showToast(`已导出 ${pois.length} 个标点及其类型资产`)}
+    function mergePoiSelection(data,replaceRegion=null){if(!Array.isArray(data.types)||!Array.isArray(data.pois))throw new Error('invalid selection');let regionWasNew=!!replaceRegion&&!state.regionTags.includes(replaceRegion),incomingPois=replaceRegion?data.pois.filter(p=>normalizeRegions(p).includes(replaceRegion)):data.pois;if(replaceRegion)state.pois=state.pois.filter(p=>!normalizeRegions(p).includes(replaceRegion));let idMap=new Map(),stamp=Date.now().toString(36);data.types.forEach((raw,index)=>{let source={...cleanType(raw),layer:deliveryForm(raw.layer),volume:volumeGrade(raw.volume)},local=state.types.find(t=>t.id===source.id),same=local&&local.name===source.name&&deliveryForm(local.layer)===source.layer&&volumeGrade(local.volume)===source.volume&&local.icon===source.icon&&local.iconImage===source.iconImage;if(!local||!same){let id=local?`shared-${stamp}-${index}`:source.id;let incoming={...source,id,icon:source.icon||'●',iconImage:source.iconImage||null,layer:source.layer,volume:source.volume};state.types.push(incoming);state.visibleTypes.push(id);idMap.set(raw.id,id)}else idMap.set(raw.id,local.id)});let incomingTags=normalizeTags([...(Array.isArray(data.gameplayTags)?data.gameplayTags:[]),...incomingPois.flatMap(p=>p.tags||[])]),incomingRegions=normalizeTags([...(Array.isArray(data.regionTags)?data.regionTags:[]),...incomingPois.flatMap(p=>normalizeRegions(p)),...(replaceRegion?[replaceRegion]:[])]);state.gameplayTags=[...new Set([...state.gameplayTags,...incomingTags])];state.regionTags=[...new Set([...state.regionTags,...incomingRegions])];let added=0;incomingPois.forEach((raw,index)=>{let mappedType=idMap.get(raw.type)||state.types.find(t=>t.id===raw.type)?.id;if(!mappedType)return;let {region,...poi}=raw,regions=normalizeRegions({...poi,region});if(replaceRegion&&!regions.includes(replaceRegion))return;let id=poi.id||`shared-poi-${stamp}-${index}`;while(state.pois.some(p=>p.id===id))id=`${id}-${index+1}`;let uniqueId=poi.uniqueId||'';if(uniqueId&&state.pois.some(p=>p.uniqueId===uniqueId))uniqueId='';state.pois.push({...poi,id,type:mappedType,regions,uniqueId,tags:normalizeTags(poi.tags),confirmed:!!poi.confirmed,duration:poi.duration!=null&&Number.isFinite(Number(poi.duration))?Number(poi.duration):null});added++});if(state.coordinateCalibration&&(!state.pois.some(p=>p.id===state.coordinateCalibration.aId)||!state.pois.some(p=>p.id===state.coordinateCalibration.bId)))state.coordinateCalibration=null;state.selected=null;state.multiSelected=[];$('#detail').classList.remove('show');render();showToast(replaceRegion?`${regionWasNew?`已创建区域标签“${replaceRegion}”；`:''}已替换“${replaceRegion}”区域：${added} 个标点`:`已导入 ${added} 个协作标点`)}
+    function exportRegionSync(tag){let pois=state.pois.filter(p=>normalizeRegions(p).includes(tag)),typeIds=[...new Set(pois.map(p=>p.type))],types=state.types.filter(t=>typeIds.includes(t.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(gameplayTag=>pois.some(p=>(p.tags||[]).includes(gameplayTag))),regionTags=state.regionTags.filter(regionTag=>pois.some(p=>normalizeRegions(p).includes(regionTag)));downloadJson({format:'worldmark-region-sync',version:1,exportedAt:new Date().toISOString(),regionTag:tag,types,gameplayTags,regionTags,pois},`worldmark-region-${tag.replace(/[^\w-]+/g,'-')||'export'}.json`);showToast(`已导出“${tag}”区域的 ${pois.length} 个标点`)}
+    function fillRegionOptions(selector){let select=$(selector),hasTags=state.regionTags.length>0;select.innerHTML=hasTags?state.regionTags.map(tag=>`<option value="${esc(tag)}">${esc(tag)}</option>`).join(''):'<option value="">暂无区域标签</option>';select.disabled=!hasTags;return hasTags}
+    function openExportOptions(){let hasTags=fillRegionOptions('#exportRegionTag');$('#exportRegion').disabled=!hasTags;$('#exportModal').style.display='flex'}
+    function openImportOptions(){$('#importModal').style.display='flex'}
+    function exportFullConfig(){downloadJson({...state,selected:null,multiSelected:[],boxSelectMode:false},(state.name||'worldmark').replace(/[^\w\-]+/g,'-')+'.json');showToast('完整地图配置已导出')}
+    function importPayload(data){if(data?.format==='worldmark-poi-selection')mergePoiSelection(data);else if(data?.format==='worldmark-region-sync'){if(typeof data.regionTag!=='string'||!data.regionTag.trim())throw new Error('invalid region sync');mergePoiSelection(data,data.regionTag.trim())}else applyConfig(data)}
+    function readJson(input,onSuccess,onError){let f=input.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{onSuccess(JSON.parse(r.result))}catch{showToast(onError)}};r.readAsText(f);input.value=''}
+    $('#newPoiFromMenu').onclick=()=>{let pos=contextPos;contextPos=null;$('#poiContextMenu').style.display='none';if(pos)openPoiForm(pos)};$('#copyPoiFromMenu').onclick=()=>{let id=contextPoiId;contextPoiId=null;$('#poiContextMenu').style.display='none';if(id)copyPoi(id)};$('#exportSelection').onclick=exportSelectedPois;$('#exportBtn').onclick=openExportOptions;$('#closeExport').onclick=()=>$('#exportModal').style.display='none';$('#exportAll').onclick=()=>{exportFullConfig();$('#exportModal').style.display='none'};$('#exportRegion').onclick=()=>{let tag=$('#exportRegionTag').value;if(!tag)return;exportRegionSync(tag);$('#exportModal').style.display='none'};$('#importBtn').onclick=openImportOptions;$('#closeImport').onclick=()=>$('#importModal').style.display='none';$('#importAll').onclick=()=>$('#importAllFile').click();$('#importRegion').onclick=()=>$('#regionImportFile').click();$('#importAllFile').onchange=e=>readJson(e.target,data=>{if(data?.format==='worldmark-region-sync'||data?.format==='worldmark-poi-selection')throw new Error('not full config');applyConfig(data);$('#importModal').style.display='none';showToast('完整地图配置已导入')},'请选择完整地图配置 JSON');$('#regionImportFile').onchange=e=>readJson(e.target,data=>{let regionTag=typeof data?.regionTag==='string'?data.regionTag.trim():'';if(data?.format!=='worldmark-region-sync'||!regionTag)throw new Error('invalid region file');mergePoiSelection(data,regionTag);$('#importModal').style.display='none'},'请选择有效的区域协作 JSON');$('#setupImport').onchange=e=>readJson(e.target,data=>{importPayload(data);$('#onboarding').style.display='none';showToast('配置已导入')},'无法读取该 JSON 文件');
+    document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select')||$('#poiModal').style.display==='flex')return;if(e.key==='Escape'&&(state.selected||state.multiSelected.length)){e.preventDefault();clearSelection()}else if(e.key==='Delete'&&(state.selected||state.multiSelected.length)){e.preventDefault();deletePoi()}});window.addEventListener('resize',render);
+  </script>
+  <script>
+    (()=>{
+      const heading=document.querySelector('.types-title'),manage=document.getElementById('manageTypes');
+      if(!heading||!manage||document.getElementById('showAllTypes'))return;
+      const actions=document.createElement('div');
+      actions.className='type-global-actions';
+      actions.innerHTML='<button class="btn" id="showAllTypes" title="显示所有标点类型">全显示</button><button class="btn" id="hideAllTypes" title="隐藏所有标点类型">全隐藏</button>';
+      heading.insertBefore(actions,manage);
+      document.getElementById('showAllTypes').onclick=()=>{state.visibleTypes=state.types.map(type=>type.id);render()};
+      document.getElementById('hideAllTypes').onclick=()=>{state.visibleTypes=[];render()};
+    })();
+  </script>
+  <script>
+    (()=>{
+      const singleTagInput=document.getElementById('newTagName');
+      if(!singleTagInput||document.getElementById('bulkTagNames'))return;
+      const batch=document.createElement('div');
+      batch.className='bulk-tag-import';
+      batch.innerHTML='<input id="bulkTagNames" placeholder="批量输入玩法类型，例如：潜行, 跑酷, Boss 战" aria-label="批量输入玩法类型"/><button class="btn primary" id="importBulkTags">批量导入</button><small>每一种玩法类型请用英文逗号或中文逗号分隔；重复名称会自动跳过。</small>';
+      singleTagInput.closest('.row').insertAdjacentElement('afterend',batch);
+      const importTags=()=>{
+        const input=document.getElementById('bulkTagNames');
+        const values=input.value.split(/[,，]/).map(tag=>tag.trim()).filter(Boolean);
+        if(!values.length){input.focus();return}
+        const existing=new Set(state.gameplayTags),added=[];
+        values.forEach(tag=>{if(!existing.has(tag)){existing.add(tag);added.push(tag)}});
+        if(!added.length){showToast('没有可新增的玩法类型');return}
+        state.gameplayTags.push(...added);
+        input.value='';
+        renderTagManager();
+        showToast(`已导入 ${added.length} 个玩法类型`);
+      };
+      document.getElementById('importBulkTags').onclick=importTags;
+      document.getElementById('bulkTagNames').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();importTags()}};
+      document.getElementById('manageTags').addEventListener('click',()=>{document.getElementById('bulkTagNames').value=''});
+    })();
+  </script>
+  <script>
+    (()=>{
+      const visibilityActions=document.querySelector('.type-global-actions'),volumeRange=document.querySelector('.volume-range');
+      if(visibilityActions&&volumeRange)volumeRange.insertAdjacentElement('afterend',visibilityActions);
+      if(document.getElementById('gameplayFilter'))return;
+      const filter=document.createElement('details');
+      filter.id='gameplayFilter';
+      filter.className='gameplay-filter';
+      (visibilityActions||volumeRange)?.insertAdjacentElement('afterend',filter);
+      const normalizeGameplayFilter=()=>{state.gameplayFilter=normalizeTags(state.gameplayFilter).filter(tag=>state.gameplayTags.includes(tag))};
+      const matchesGameplayFilter=poi=>!state.gameplayFilter.length||(poi.tags||[]).some(tag=>state.gameplayFilter.includes(tag));
+      const renderGameplayFilter=()=>{
+        normalizeGameplayFilter();
+        const open=filter.open,selected=state.gameplayFilter,tags=state.gameplayTags;
+        const summary=selected.length?`已选 ${selected.length} 个玩法`:'全部玩法';
+        filter.innerHTML=`<summary><span>玩法筛选</span><span class="gameplay-filter-summary">${esc(summary)}</span></summary>${tags.length?`<div class="gameplay-filter-options">${tags.map(tag=>`<label class="tag-choice" title="${esc(tag)}"><input type="checkbox" data-gameplay-filter value="${esc(tag)}" ${selected.includes(tag)?'checked':''}/>${esc(tag)}</label>`).join('')}${selected.length?'<button class="btn filter-clear" type="button" data-clear-gameplay-filter>清除筛选</button>':''}</div>`:'<div class="gameplay-filter-empty">暂无玩法标签</div>'}`;
+        filter.open=open;
+      };
+      selectInBox=(a,b)=>{
+        const x1=Math.min(a.x,b.x),x2=Math.max(a.x,b.x),y1=Math.min(a.y,b.y),y2=Math.max(a.y,b.y);
+        state.multiSelected=state.pois.filter(p=>{const x=p.x/100*mapLayout.width,y=p.y/100*mapLayout.height;return typeIsVisible(typeBy(p.type))&&matchesGameplayFilter(p)&&(state.confirmedViewMode!=='hide'||p.confirmed)&&x>=x1&&x<=x2&&y>=y1&&y<=y2}).map(p=>p.id);
+        state.selected=null;
+        $('#detail').classList.remove('show');
+        render();
+        showToast(state.multiSelected.length?`已框选 ${state.multiSelected.length} 个标点，可拖动或按 Delete 删除`:'框选区域内没有符合筛选条件的标点');
+      };
+      const baseRender=render;
+      render=()=>{normalizeGameplayFilter();baseRender();mapCanvas.querySelectorAll('.marker').forEach(marker=>{let poi=state.pois.find(item=>item.id===marker.dataset.poi),visible=!!poi&&matchesGameplayFilter(poi);marker.hidden=!visible;marker.classList.toggle('gameplay-hidden',!visible)});renderGameplayFilter()};
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>baseApplyConfig({...data,gameplayFilter:normalizeTags(data?.gameplayFilter)});
+      filter.addEventListener('change',event=>{if(!event.target.matches('[data-gameplay-filter]'))return;state.gameplayFilter=[...filter.querySelectorAll('[data-gameplay-filter]:checked')].map(input=>input.value);render()});
+      filter.addEventListener('click',event=>{if(!event.target.closest('[data-clear-gameplay-filter]'))return;state.gameplayFilter=[];render()});
+      renderGameplayFilter();
+    })();
+  </script>
+  <script src="./supabase-client-config.js"></script>
+  <script>
+    (()=>{
+      const preferenceKey='worldmark-supabase-connection-v1';
+      const initialConfig=window.WORLDMARK_SUPABASE||{};
+      let connection=null,cloudClient=null,cloudChannel=null,saveTimer=null,saveRetryTimer=null,saveRetryAttempt=0,saving=false,saveQueued=false,loadingRemote=false,lastSignature='',syncedPois=new Map(),sdkPromise=null,connectionAttempt=0;
+      const clientId=`client-${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`;
+      const readPreferences=()=>{try{return JSON.parse(localStorage.getItem(preferenceKey)||'{}')}catch{return{}}};
+      const writePreferences=value=>{try{localStorage.setItem(preferenceKey,JSON.stringify(value))}catch{}};
+      const clearPreferences=()=>{try{localStorage.removeItem(preferenceKey)}catch{}};
+      const savedPreferences=readPreferences();
+      const topActions=document.querySelector('.top-actions');
+      if(!topActions||document.getElementById('onlineCollaboration'))return;
+      const onlineButton=document.createElement('button');
+      onlineButton.className='btn';onlineButton.id='onlineCollaboration';onlineButton.textContent='在线协作';
+      topActions.insertBefore(onlineButton,document.getElementById('settingsBtn'));
+      document.body.insertAdjacentHTML('beforeend',`<div class="modal online-modal" id="onlineModal" style="display:none"><div class="dialog"><div class="eyebrow">SUPABASE 实时协作</div><h2>连接共享看板</h2><p>不需要成员账号：持有协作链接的成员即可共同编辑。发布网站时可将项目 URL 与 publishable key 写入配置文件，协作者便只需打开链接。</p><div class="field"><label>Supabase 项目 URL</label><input id="onlineProjectUrl" placeholder="https://xxxx.supabase.co" value="${esc(initialConfig.url||savedPreferences.url||'')}"/></div><div class="field"><label>Publishable key（可公开）</label><input id="onlinePublishableKey" placeholder="sb_publishable_..." value="${esc(initialConfig.publishableKey||savedPreferences.publishableKey||'')}"/></div><div class="field"><label>协作链接</label><input id="onlineShareLink" class="online-share" placeholder="粘贴协作链接，或点击下方创建" value="${esc(savedPreferences.shareLink||'')}"/></div><div class="field"><label>创建口令（可选，仅部署者设置了 WORLDMARK_CREATE_KEY 时需要）</label><input id="onlineCreateKey" type="password" placeholder="无需账号；此项不会保存到浏览器"/></div><div class="online-status" id="onlineStatus">尚未连接，当前仍使用本地看板。</div><div class="online-actions"><button class="btn" id="closeOnline">关闭</button><div class="row"><button class="btn" id="copyShareLink">复制协作链接</button><button class="btn" id="disconnectOnline">断开</button><button class="btn primary" id="connectOnline">连接</button><button class="btn primary" id="createOnline">创建共享看板</button></div></div></div></div><section class="online-connect-gate" id="onlineConnectionGate" hidden><div class="online-connect-card"><div class="online-connect-spinner"></div><div class="eyebrow">共享看板</div><h2 id="onlineConnectionTitle">正在连接共享看板</h2><p id="onlineConnectionMessage">正在读取看板内容，请稍候。</p><div class="online-connect-actions"><button class="btn" id="abandonOnlineConnection">改为本地编辑</button><button class="btn primary retry" id="retryOnlineConnection">重试连接</button></div></div></section>`);
+      const $online=id=>document.getElementById(id);
+      const setConnectionGate=(mode,title,message)=>{const gate=$online('onlineConnectionGate');gate.hidden=false;gate.classList.toggle('failed',mode==='failed');$online('onlineConnectionTitle').textContent=title;$online('onlineConnectionMessage').textContent=message;$('#onboarding').style.display='none'};
+      const hideConnectionGate=()=>{$online('onlineConnectionGate').hidden=true;$online('onlineConnectionGate').classList.remove('failed')};
+      const setOnlineStatus=(message,kind='')=>{let status=$online('onlineStatus');status.textContent=message;status.className=`online-status ${kind}`.trim();onlineButton.classList.toggle('primary',kind==='ready')};
+      const describeConnectionError=error=>{const message=String(error?.message||error||'未知错误'),status=Number(error?.status||0);if(status===401||status===403)return'协作链接无效、已失效或无权访问此看板。请向创建者索取新的链接。';if(status===404)return'未找到共享看板或在线服务。请检查协作链接与 Supabase 函数是否已部署。';if(status===429)return'在线服务暂时繁忙，请稍后重试。';if(!navigator.onLine||/network|fetch|超时|CDN|无法载入|failed to fetch|abort/i.test(message))return'网络连接失败或请求超时。请检查网络，尝试开关 VPN 后重新连接。';return`连接失败：${message}`};
+      const currentSettings=()=>({url:$online('onlineProjectUrl').value.trim().replace(/\/+$/,''),publishableKey:$online('onlinePublishableKey').value.trim()});
+      const localViewKeys=['activeType','visibleTypes','volumeRange','lockIconSize','iconSize','showLabels','gameplayFilter','regionFilter','confirmedViewMode','activeMainlineStage','visibleTaskLines','routeArrowWidth','routeArrowHeadSize','taskRoutePanelCollapsed','taskRouteCollapsedTags'];
+      const cloudSnapshot=()=>{let copy=JSON.parse(JSON.stringify(state));copy.selected=null;copy.multiSelected=[];copy.boxSelectMode=false;return copy};
+      const sharedSnapshot=()=>{let copy=cloudSnapshot();localViewKeys.forEach(key=>delete copy[key]);return copy};
+      const boardSnapshot=()=>{let copy=sharedSnapshot();copy.pois=[];return copy};
+      const snapshotSignature=snapshot=>JSON.stringify(snapshot);
+      const poiSignature=poi=>JSON.stringify(poi);
+      const rememberPois=()=>{syncedPois=new Map(state.pois.map(poi=>[poi.id,poiSignature(poi)]))};
+      const poiChanges=()=>{let current=new Map(state.pois.map(poi=>[poi.id,poiSignature(poi)])),upserts=[],deletes=[];current.forEach((signature,id)=>{if(syncedPois.get(id)!==signature)upserts.push(JSON.parse(signature))});syncedPois.forEach((_,id)=>{if(!current.has(id))deletes.push(id)});return{upserts,deletes}};
+      const shareUrl=(boardId,token)=>{let url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('worldmark',`${boardId}.${token}`);return url.href};
+      const parseShareLink=value=>{let raw=(value||'').trim();try{if(/^https?:|^file:/i.test(raw))raw=new URL(raw).searchParams.get('worldmark')||''}catch{}let point=raw.indexOf('.');return point>0?{boardId:raw.slice(0,point),token:raw.slice(point+1)}:null};
+      const loadSdk=()=>{if(window.supabase?.createClient)return Promise.resolve();if(sdkPromise)return sdkPromise;sdkPromise=new Promise((resolve,reject)=>{let done=false,finish=error=>{if(done)return;done=true;clearTimeout(timer);error?reject(error):resolve()},script=document.createElement('script'),timer=setTimeout(()=>finish(new Error('载入 Supabase 客户端超时，请检查网络或 CDN 访问。')),12000);script.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';script.onload=()=>finish();script.onerror=()=>finish(new Error('无法载入 Supabase 客户端库，请检查网络。'));document.head.append(script)});return sdkPromise};
+      async function callApi(settings,action,payload){let controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{let response=await fetch(`${settings.url}/functions/v1/worldmark-api`,{method:'POST',headers:{'Content-Type':'application/json','apikey':settings.publishableKey},body:JSON.stringify({action,...payload}),signal:controller.signal}),data={};try{data=await response.json()}catch{}if(!response.ok){let error=new Error(data.error||`请求失败（${response.status}）`);error.status=response.status;error.payload=data;throw error}return data}catch(error){if(error?.name==='AbortError')throw new Error('连接 Supabase 超时，请检查项目 URL、函数部署状态与网络。');throw error}finally{clearTimeout(timer)}}
+      function persistConnection(){if(!connection)return;writePreferences({url:connection.url,publishableKey:connection.publishableKey,shareLink:shareUrl(connection.boardId,connection.token)})}
+      async function joinChannel(){if(!connection||!cloudClient)return;if(cloudChannel)cloudClient.removeChannel(cloudChannel);cloudChannel=cloudClient.channel(`worldmark:${connection.boardId}:${connection.token}`).on('broadcast',{event:'revision'},message=>{let incoming=message.payload||{};if(incoming.clientId===clientId)return;if(incoming.kind==='pois'){applyRemotePois(incoming);return}if(Number(incoming.revision)<=connection.revision)return;if(saving||saveTimer){saveQueued=true;return}loadRemote(true)}).subscribe(status=>{if(status==='SUBSCRIBED')setOnlineStatus(`已连接 · 云端版本 ${connection.revision}`,'ready')})}
+      function applyRemote(snapshot,revision){
+        loadingRemote=true;
+        try{
+          const localView=Object.fromEntries(localViewKeys.map(key=>[key,state[key]]));
+          const localMapView={...view};
+          preserveMapView=true;
+          try{applyConfig(snapshot)}finally{preserveMapView=false;view=localMapView}
+          Object.assign(state,localView,{visibleTypes:(localView.visibleTypes||[]).filter(id=>state.types.some(type=>type.id===id))});
+          render();
+          $('#onboarding').style.display='none';
+          connection.revision=revision;
+          lastSignature=snapshotSignature(boardSnapshot());
+          rememberPois();
+        }finally{loadingRemote=false}
+      }
+      function applyRemotePois(change){
+        loadingRemote=true;
+        let hasLocalPendingChanges=false;
+        try{
+          const upserts=(Array.isArray(change.upserts)?change.upserts:[]).filter(poi=>poi&&typeof poi.id==='string'&&poi.id);
+          const deletes=[...new Set((Array.isArray(change.deletes)?change.deletes:[]).filter(id=>typeof id==='string'&&id))];
+          const current=new Map(state.pois.map(poi=>[poi.id,poi]));
+          upserts.forEach(raw=>{
+            const incoming={...raw,confirmed:!!raw.confirmed};
+            const local=current.get(incoming.id);
+            const localIsPending=!!local&&syncedPois.get(incoming.id)!==poiSignature(local);
+            // 保留本机尚未上传的版本；将远端版本记为新的基线，稍后自动补传本机改动。
+            if(localIsPending)hasLocalPendingChanges=true;else current.set(incoming.id,incoming);
+            syncedPois.set(incoming.id,poiSignature(incoming));
+          });
+          deletes.forEach(id=>{
+            const local=current.get(id);
+            const localIsPending=!!local&&syncedPois.get(id)!==poiSignature(local);
+            if(localIsPending){
+              hasLocalPendingChanges=true;
+              syncedPois.delete(id);
+            }else{
+              current.delete(id);
+              syncedPois.delete(id);
+            }
+          });
+          state.pois=[...current.values()];
+          if(state.selected&&!state.pois.some(poi=>poi.id===state.selected))clearSelection();
+          render();
+        }finally{
+          loadingRemote=false;
+          if(hasLocalPendingChanges)scheduleSave();
+        }
+      }
+      async function loadRemote(silent=false){if(!connection)return;try{if(!silent)setOnlineStatus('正在读取共享看板…');let data=await callApi(connection,'load',{boardId:connection.boardId,token:connection.token});applyRemote(data.snapshot,data.revision);if(!silent)showToast('共享看板已载入')}catch(error){const message=describeConnectionError(error);setOnlineStatus(message,'error');if(!silent)showToast(message)}}
+      function scheduleSaveRetry(){
+        if(!connection||loadingRemote)return;
+        clearTimeout(saveRetryTimer);
+        const delay=Math.min(15000,800*2**Math.min(saveRetryAttempt,4));
+        saveRetryAttempt+=1;
+        saveRetryTimer=setTimeout(()=>{saveRetryTimer=null;scheduleSave()},delay);
+      }
+      async function flushSave(){saveTimer=null;if(!connection||loadingRemote||saving)return;let board=boardSnapshot(),boardSignature=snapshotSignature(board),changes=poiChanges();if(boardSignature===lastSignature&&!changes.upserts.length&&!changes.deletes.length)return;saving=true;setOnlineStatus('正在同步修改…');try{if(boardSignature!==lastSignature){let data=await callApi(connection,'save_board',{boardId:connection.boardId,token:connection.token,revision:connection.revision,snapshot:board});connection.revision=data.revision;lastSignature=boardSignature;if(cloudChannel)cloudChannel.send({type:'broadcast',event:'revision',payload:{kind:'board',revision:data.revision,clientId}})}if(changes.upserts.length||changes.deletes.length){await callApi(connection,'sync_pois',{boardId:connection.boardId,token:connection.token,upserts:changes.upserts,deletes:changes.deletes});changes.upserts.forEach(poi=>syncedPois.set(poi.id,poiSignature(poi)));changes.deletes.forEach(id=>syncedPois.delete(id));if(cloudChannel)cloudChannel.send({type:'broadcast',event:'revision',payload:{kind:'pois',upserts:changes.upserts,deletes:changes.deletes,clientId}})}persistConnection();saveRetryAttempt=0;clearTimeout(saveRetryTimer);saveRetryTimer=null;setOnlineStatus(`已同步 · 云端版本 ${connection.revision}`,'ready')}catch(error){if(error.status===409){await loadRemote(true);showToast('检测到其他成员的设置修改，已载入最新云端版本')}else{setOnlineStatus(`同步失败：${error.message}`,'error');if(saveRetryAttempt===0)showToast('云端同步失败，本地修改仍保留；正在自动重试');scheduleSaveRetry()}}finally{saving=false;if(saveQueued){saveQueued=false;scheduleSave()}}}
+      function scheduleSave(){if(!connection||loadingRemote)return;if(saving){saveQueued=true;return}let boardSignature=snapshotSignature(boardSnapshot()),changes=poiChanges();if(boardSignature===lastSignature&&!changes.upserts.length&&!changes.deletes.length)return;clearTimeout(saveTimer);saveTimer=setTimeout(flushSave,300)}
+      const previousRender=render;render=()=>{let result=previousRender();scheduleSave();return result};
+      async function prepareClient(settings){if(!settings.url||!settings.publishableKey)throw new Error('请填写 Supabase 项目 URL 与 publishable key。');await loadSdk();cloudClient=window.supabase.createClient(settings.url,settings.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}})}
+      async function connectBoard(options={}){const throughGate=!!options.throughGate,attempt=++connectionAttempt,settings=currentSettings(),shared=parseShareLink($online('onlineShareLink').value);if(!shared){const message='协作链接格式无效，请向创建者获取完整的共享链接。';setOnlineStatus(message,'error');if(throughGate)setConnectionGate('failed','无法连接共享看板',message);return false}try{setOnlineStatus('正在连接…');if(throughGate)setConnectionGate('connecting','正在连接共享看板','正在验证链接并读取云端看板，请稍候。');await prepareClient(settings);if(attempt!==connectionAttempt)return false;let data=await callApi(settings,'load',shared);if(attempt!==connectionAttempt)return false;connection={...settings,...shared,revision:data.revision};applyRemote(data.snapshot,data.revision);persistConnection();await joinChannel();if(attempt!==connectionAttempt)return false;$online('onlineShareLink').value=shareUrl(connection.boardId,connection.token);hideConnectionGate();showToast('已加入在线协作看板');return true}catch(error){if(attempt!==connectionAttempt)return false;const message=describeConnectionError(error);setOnlineStatus(message,'error');if(throughGate)setConnectionGate('failed','连接共享看板失败',message);else showToast(message);return false}}
+      async function createBoard(){let settings=currentSettings();try{setOnlineStatus('正在创建共享看板…');await prepareClient(settings);let snapshot=sharedSnapshot(),data=await callApi(settings,'create',{snapshot,createKey:$online('onlineCreateKey').value});connection={...settings,boardId:data.boardId,token:data.token,revision:data.revision};lastSignature=snapshotSignature(boardSnapshot());rememberPois();persistConnection();$online('onlineShareLink').value=shareUrl(connection.boardId,connection.token);await joinChannel();showToast('共享看板已创建，复制链接即可邀请协作者')}catch(error){const message=describeConnectionError(error);setOnlineStatus(message,'error');showToast(message)}}
+      async function copyShareLink(){let value=$online('onlineShareLink').value||connection&&shareUrl(connection.boardId,connection.token);if(!value){showToast('请先创建或连接共享看板');return}$online('onlineShareLink').value=value;try{await navigator.clipboard.writeText(value)}catch{let input=$online('onlineShareLink');input.select();document.execCommand('copy')}showToast('协作链接已复制')}
+      const continueLocalEditing=(forgetConnection=false)=>{connectionAttempt++;clearTimeout(saveTimer);clearTimeout(saveRetryTimer);saveRetryTimer=null;saveRetryAttempt=0;if(cloudChannel&&cloudClient)cloudClient.removeChannel(cloudChannel);connection=null;cloudChannel=null;cloudClient=null;lastSignature='';if(forgetConnection)clearPreferences();hideConnectionGate();$('#onboarding').style.display='none';setOnlineStatus('已切换为本地编辑，未连接共享看板。');render();showToast('当前正在本地编辑')};
+      const beginSharedConnection=()=>{const hasConfig=(initialConfig.url||savedPreferences.url)&&(initialConfig.publishableKey||savedPreferences.publishableKey);if(!hasConfig){setConnectionGate('failed','缺少共享看板配置','此页面缺少 Supabase 连接配置。请联系看板创建者，或改为本地编辑。');return}connectBoard({throughGate:true})};
+      onlineButton.onclick=()=>{$online('onlineModal').style.display='flex'};$online('closeOnline').onclick=()=>{$online('onlineModal').style.display='none'};$online('connectOnline').onclick=connectBoard;$online('createOnline').onclick=createBoard;$online('copyShareLink').onclick=copyShareLink;$online('disconnectOnline').onclick=()=>continueLocalEditing(true);$online('abandonOnlineConnection').onclick=continueLocalEditing;$online('retryOnlineConnection').onclick=beginSharedConnection;
+      let sharedFromUrl=new URL(location.href).searchParams.get('worldmark'),savedShare=savedPreferences.shareLink;if(sharedFromUrl)$online('onlineShareLink').value=location.href;
+      if(sharedFromUrl||savedShare){$('#onboarding').style.display='none';setConnectionGate('connecting','正在连接共享看板','正在准备连接，请稍候。');setTimeout(beginSharedConnection,0)};
+    })();
+  </script>
+  <script>
+    (()=>{
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>baseApplyConfig({...data,showLabels:data?.showLabels===true});
+      const baseSelectPoi=selectPoi;
+      selectPoi=id=>{baseSelectPoi(id);let typeLine=$('#detail p');if(typeLine)typeLine.innerHTML=typeLine.innerHTML.replace(/ · 体量：.*?级/,'')};
+      const baseRender=render;
+      render=()=>{
+        markerLayer.replaceChildren();
+        const result=baseRender();
+        mapCanvas.querySelectorAll('.marker').forEach(marker=>markerLayer.append(marker));
+        // 图标移到独立的屏幕坐标层：不会嵌套在底图 transform 中，Edge 也不会拉伸图片。
+        // 未锁定时随地图缩放，锁定时保持屏幕尺寸；文字、间距与图标使用同一比例尺。
+        const controlSize=Math.max(2,Math.min(64,Number(state.iconSize)||20));
+        const iconSize=+(controlSize*.7*(state.lockIconSize?1:view.zoom)).toFixed(2);
+        const glyphSize=+(iconSize*.78).toFixed(1);
+        const labelSize=+(iconSize*.36).toFixed(1);
+        const labelGap=+(iconSize*.12).toFixed(1);
+        markerLayer.querySelectorAll('.marker').forEach(marker=>{
+          marker.style.setProperty('--icon-size',`${iconSize}px`);
+          marker.style.setProperty('--glyph-size',`${glyphSize}px`);
+          marker.style.setProperty('--label-size',`${labelSize}px`);
+          marker.style.setProperty('--label-gap',`${labelGap}px`);
+        });
+        moveMarkerNodes(state.pois.map(poi=>poi.id));
+        return result;
+      };
+      render();
+    })();
+  </script>
+  <script>
+    (()=>{
+      // 在线与本地共用的底图替换入口：不再要求穿过首次建图的类型设置步骤。
+      const onboarding=$('#onboarding'),nextButton=$('#nextBtn'),settingsButton=$('#settingsBtn'),baseMapInput=$('#baseMap');
+      const originalNextHandler=nextButton.onclick;
+      let editingMapSettings=false;
+      settingsButton.onclick=()=>{
+        editingMapSettings=true;
+        state.step=1;
+        document.querySelectorAll('.wizard-step').forEach(step=>step.classList.remove('show'));
+        document.querySelector('[data-step="1"]').classList.add('show');
+        $('#worldName').value=state.name;
+        baseMapInput.value='';
+        nextButton.textContent='保存底图';
+        $('#dots').innerHTML='<b>●</b> ●';
+        onboarding.style.display='flex';
+      };
+      nextButton.onclick=()=>{
+        if(!editingMapSettings){originalNextHandler();return}
+        const file=baseMapInput.files?.[0];
+        state.name=$('#worldName').value.trim()||'未命名世界';
+        const finish=message=>{
+          editingMapSettings=false;
+          onboarding.style.display='none';
+          render();
+          showToast(message);
+        };
+        if(!file){finish('地图设置已保存');return}
+        const reader=new FileReader();
+        reader.onload=()=>{
+          state.image=reader.result;
+          state.imageSize=null;
+          updateImageSize(state.image);
+          finish('底图已替换，正在同步至共享看板');
+        };
+        reader.onerror=()=>showToast('无法读取这张底图，请换一张图片重试');
+        reader.readAsDataURL(file);
+      };
+    })();
+  </script>
+  <script>
+    (()=>{
+      const gameplayFilter=document.getElementById('gameplayFilter');
+      if(!gameplayFilter||document.getElementById('confirmedViewMode'))return;
+      const control=document.createElement('section');
+      control.id='confirmedViewFilter';
+      control.className='certainty-filter';
+      control.innerHTML='<label for="confirmedViewMode">未确定标点</label><select id="confirmedViewMode" aria-label="未确定标点显示方式"><option value="normal">正常显示</option><option value="dim">虚化显示</option><option value="hide">全部隐藏</option></select>';
+      gameplayFilter.insertAdjacentElement('afterend',control);
+      const select=control.querySelector('select');
+      const normalizeMode=()=>{if(!['normal','dim','hide'].includes(state.confirmedViewMode))state.confirmedViewMode='normal'};
+      const baseRender=render;
+      render=()=>{normalizeMode();const result=baseRender();select.value=state.confirmedViewMode;return result};
+      select.onchange=()=>{state.confirmedViewMode=select.value;render()};
+      render();
+    })();
+  </script>
+  <script>
+    (()=>{
+      const stageId=(index)=>`stage-${Date.now().toString(36)}-${index}-${Math.random().toString(36).slice(2,6)}`;
+      const normalizeStages=value=>{
+        const used=new Set();
+        return (Array.isArray(value)?value:[]).map((raw,index)=>{
+          const name=typeof raw==='string'?raw.trim():String(raw?.name||'').trim();
+          let id=typeof raw==='object'&&typeof raw?.id==='string'&&raw.id.trim()?raw.id.trim():`stage-${index+1}`;
+          if(!name)return null;
+          while(used.has(id))id=`${id}-${index+1}`;
+          used.add(id);return{id,name};
+        }).filter(Boolean);
+      };
+      const stageIds=()=>new Set((state.mainlineStages||[]).map(stage=>stage.id));
+      const normalizeRange=(range,valid=stageIds())=>{
+        const start=typeof range?.start==='string'&&valid.has(range.start)?range.start:null;
+        const end=typeof range?.end==='string'&&valid.has(range.end)?range.end:null;
+        return{start,end};
+      };
+      const stageIndex=id=>(state.mainlineStages||[]).findIndex(stage=>stage.id===id);
+      const stageLabel=id=>(state.mainlineStages||[]).find(stage=>stage.id===id)?.name||'';
+      const stageRangeText=poi=>{const range=normalizeRange(poi?.stageRange);if(!range.start&&!range.end)return'全部阶段';if(!range.start)return`至「${stageLabel(range.end)}」`;if(!range.end)return`自「${stageLabel(range.start)}」起`;return`「${stageLabel(range.start)}」至「${stageLabel(range.end)}」`};
+      const appearsAtCurrentStage=poi=>{
+        const current=state.activeMainlineStage;
+        if(!current)return true;
+        const currentIndex=stageIndex(current);
+        if(currentIndex<0)return true;
+        const range=normalizeRange(poi?.stageRange),startIndex=range.start?stageIndex(range.start):-1,endIndex=range.end?stageIndex(range.end):-1;
+        return(startIndex<0||currentIndex>=startIndex)&&(endIndex<0||currentIndex<=endIndex);
+      };
+
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>{
+        const stages=normalizeStages(data?.mainlineStages),valid=new Set(stages.map(stage=>stage.id));
+        const pois=(Array.isArray(data?.pois)?data.pois:[]).map(poi=>({...poi,stageRange:normalizeRange(poi?.stageRange,valid)}));
+        baseApplyConfig({...data,mainlineStages:stages,pois});
+        if(state.activeMainlineStage&&!stageIds().has(state.activeMainlineStage))state.activeMainlineStage='';
+      };
+
+      const confirmedField=$('#poiConfirmed')?.closest('.field');
+      if(confirmedField&&!document.getElementById('poiStageRange')){
+        const stageField=document.createElement('div');
+        stageField.className='field';stageField.id='poiStageRange';
+        stageField.innerHTML='<label>主线阶段范围</label><div class="stage-range-grid"><div class="field"><label for="poiStageStart">出现阶段</label><select id="poiStageStart"></select></div><div class="field"><label for="poiStageEnd">消失阶段</label><select id="poiStageEnd"></select></div></div>';
+        confirmedField.insertAdjacentElement('afterend',stageField);
+      }
+      const stageStart=$('#poiStageStart'),stageEnd=$('#poiStageEnd');
+      const renderStageRangeInputs=(range={start:null,end:null})=>{
+        if(!stageStart||!stageEnd)return;
+        const stages=state.mainlineStages||[];
+        const startOptions=['<option value="">不限（从第一阶段出现）</option>',...stages.map((stage,index)=>`<option value="${esc(stage.id)}">${index+1}. ${esc(stage.name)}</option>`)].join('');
+        const endOptions=['<option value="">不限（持续到最后）</option>',...stages.map((stage,index)=>`<option value="${esc(stage.id)}">${index+1}. ${esc(stage.name)}</option>`)].join('');
+        stageStart.innerHTML=startOptions;stageEnd.innerHTML=endOptions;
+        const normalized=normalizeRange(range);stageStart.value=normalized.start||'';stageEnd.value=normalized.end||'';
+        stageStart.disabled=stageEnd.disabled=!stages.length;
+      };
+      const baseOpenPoiForm=openPoiForm;
+      openPoiForm=position=>{baseOpenPoiForm(position);renderStageRangeInputs()};
+      const baseOpenPoiEditor=openPoiEditor;
+      openPoiEditor=id=>{baseOpenPoiEditor(id);renderStageRangeInputs(state.pois.find(poi=>poi.id===id)?.stageRange)};
+      $('#savePoi').onclick=()=>{
+        const name=$('#poiName').value.trim(),durationRaw=$('#poiDuration').value.trim(),duration=durationRaw===''?null:Number(durationRaw),uniqueId=$('#poiUniqueId').value.trim(),tags=[...document.querySelectorAll('#poiTags input:checked')].map(input=>input.value),regions=normalizeTags(poiRegionSelection),stageRange=normalizeRange({start:stageStart?.value||null,end:stageEnd?.value||null});
+        if(!name){$('#poiName').focus();return}
+        if(duration!==null&&(!Number.isFinite(duration)||duration<0)){showToast('预期体验时长须为非负秒数');return}
+        if(stageRange.start&&stageRange.end&&stageIndex(stageRange.start)>stageIndex(stageRange.end)){showToast('出现阶段不能晚于消失阶段');return}
+        if(uniqueId&&state.pois.some(poi=>poi.uniqueId===uniqueId&&poi.id!==editingPoiId)){showToast('独特 ID 已被其他标点使用');return}
+        const data={name,note:$('#poiNote').value.trim(),type:$('#poiType').value,regions,uniqueId,tags,confirmed:$('#poiConfirmed').checked,stageRange,duration};
+        let id=editingPoiId;
+        if(id)Object.assign(state.pois.find(poi=>poi.id===id),data);else{id=createPoiId();state.pois.push({id,...data,...state.pendingPos})}
+        if(!state.visibleTypes.includes(data.type))state.visibleTypes.push(data.type);
+        editingPoiId=null;$('#poiModal').style.display='none';selectPoi(id);showToast('地点信息已保存');
+      };
+      const baseSelectPoi=selectPoi;
+      selectPoi=id=>{baseSelectPoi(id);const poi=state.pois.find(item=>item.id===id),detail=$('#detail');if(!poi||!detail)return;const line=document.createElement('p');line.textContent=`主线阶段：${stageRangeText(poi)}`;detail.querySelector('.row')?.before(line)};
+
+      const topActions=document.querySelector('.top-actions');
+      if(topActions&&!document.getElementById('manageStages')){
+        const button=document.createElement('button');button.className='btn';button.id='manageStages';button.textContent='主线阶段';
+        topActions.insertBefore(button,document.getElementById('manageTags'));
+        document.body.insertAdjacentHTML('beforeend','<div class="modal" id="stageModal" style="display:none"><div class="dialog"><div class="eyebrow">全局配置</div><h2>管理主线阶段</h2><p>阶段顺序决定标点的出现与消失范围。范围两端均包含在内。</p><div class="row"><input id="newStageName" placeholder="例如：抵达主城、击败守门者" /><button class="btn primary" id="addStage">新增</button></div><div class="stage-list" id="stageList"></div><div class="wizard-footer"><span></span><button class="btn" id="closeStages">完成</button></div></div></div>');
+        const renderStageManager=()=>{$('#stageList').innerHTML=state.mainlineStages.length?state.mainlineStages.map((stage,index)=>`<div class="stage-item"><span class="stage-order">${index+1}</span><input value="${esc(stage.name)}" aria-label="主线阶段名称"/><div class="row"><button class="btn" data-stage-up="${esc(stage.id)}" ${index===0?'disabled':''}>↑</button><button class="btn" data-stage-down="${esc(stage.id)}" ${index===state.mainlineStages.length-1?'disabled':''}>↓</button><button class="btn" data-stage-save="${esc(stage.id)}">保存</button><button class="btn danger" data-stage-remove="${esc(stage.id)}">删除</button></div></div>`).join(''):'<div class="empty">尚未定义主线阶段；标点会默认在所有阶段出现。</div>'};
+        button.onclick=()=>{renderStageManager();$('#newStageName').value='';$('#stageModal').style.display='flex';$('#newStageName').focus()};
+        $('#closeStages').onclick=()=>$('#stageModal').style.display='none';
+        $('#addStage').onclick=()=>{const name=$('#newStageName').value.trim();if(!name)return;if(state.mainlineStages.some(stage=>stage.name===name)){showToast('该主线阶段已存在');return}state.mainlineStages.push({id:stageId(state.mainlineStages.length),name});$('#newStageName').value='';renderStageManager();render();showToast('主线阶段已新增')};
+        $('#stageList').onclick=event=>{const action=event.target.closest('[data-stage-up],[data-stage-down],[data-stage-save],[data-stage-remove]');if(!action)return;const id=action.dataset.stageUp||action.dataset.stageDown||action.dataset.stageSave||action.dataset.stageRemove,index=stageIndex(id);if(index<0)return;if(action.dataset.stageUp!==undefined||action.dataset.stageDown!==undefined){const next=index+(action.dataset.stageUp!==undefined?-1:1);if(next>=0&&next<state.mainlineStages.length){const [stage]=state.mainlineStages.splice(index,1);state.mainlineStages.splice(next,0,stage);renderStageManager();render()}return}if(action.dataset.stageSave!==undefined){const name=action.closest('.stage-item').querySelector('input').value.trim();if(!name)return;if(state.mainlineStages.some(stage=>stage.id!==id&&stage.name===name)){showToast('该主线阶段已存在');return}state.mainlineStages[index].name=name;renderStageManager();render();showToast('主线阶段已更新');return}if(action.dataset.stageRemove!==undefined){state.mainlineStages.splice(index,1);state.pois.forEach(poi=>{const range=normalizeRange(poi.stageRange,new Set([...stageIds(),id]));if(range.start===id)range.start=null;if(range.end===id)range.end=null;poi.stageRange=range});if(state.activeMainlineStage===id)state.activeMainlineStage='';renderStageManager();render();showToast('主线阶段已删除，关联范围已自动放宽')}};
+      }
+
+      const baseMergePoiSelection=mergePoiSelection;
+      mergePoiSelection=(data,replaceRegion=null)=>{const incomingStages=normalizeStages(data?.mainlineStages);incomingStages.forEach(stage=>{if(!state.mainlineStages.some(current=>current.id===stage.id))state.mainlineStages.push(stage)});baseMergePoiSelection(data,replaceRegion);state.pois.forEach(poi=>poi.stageRange=normalizeRange(poi.stageRange));render()};
+      exportSelectedPois=()=>{const pois=state.pois.filter(poi=>state.multiSelected.includes(poi.id)),typeIds=[...new Set(pois.map(poi=>poi.type))],types=state.types.filter(type=>typeIds.includes(type.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(tag=>pois.some(poi=>(poi.tags||[]).includes(tag))),regionTags=state.regionTags.filter(tag=>pois.some(poi=>normalizeRegions(poi).includes(tag)));if(!pois.length){showToast('请先框选至少一个标点');return}downloadJson({format:'worldmark-poi-selection',version:2,exportedAt:new Date().toISOString(),types,gameplayTags,regionTags,mainlineStages:state.mainlineStages,pois},'worldmark-poi-selection.json');$('#poiContextMenu').style.display='none';showToast(`已导出 ${pois.length} 个标点及其阶段定义`)};
+      $('#exportSelection').onclick=exportSelectedPois;
+      exportRegionSync=tag=>{const pois=state.pois.filter(poi=>normalizeRegions(poi).includes(tag)),typeIds=[...new Set(pois.map(poi=>poi.type))],types=state.types.filter(type=>typeIds.includes(type.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(gameplayTag=>pois.some(poi=>(poi.tags||[]).includes(gameplayTag))),regionTags=state.regionTags.filter(regionTag=>pois.some(poi=>normalizeRegions(poi).includes(regionTag)));downloadJson({format:'worldmark-region-sync',version:2,exportedAt:new Date().toISOString(),regionTag:tag,types,gameplayTags,regionTags,mainlineStages:state.mainlineStages,pois},`worldmark-region-${tag.replace(/[^\w-]+/g,'-')||'export'}.json`);showToast(`已导出“${tag}”区域的 ${pois.length} 个标点及阶段定义`)};
+
+      const confirmedFilter=document.getElementById('confirmedViewFilter')||document.getElementById('gameplayFilter');
+      if(confirmedFilter&&!document.getElementById('mainlineStageFilter')){
+        const filter=document.createElement('section');filter.id='mainlineStageFilter';filter.className='stage-filter';filter.innerHTML='<label for="activeMainlineStage">当前主线阶段</label><select id="activeMainlineStage" aria-label="当前主线阶段"></select>';
+        confirmedFilter.insertAdjacentElement('afterend',filter);
+        const select=filter.querySelector('select');
+        const renderStageFilter=()=>{const stages=state.mainlineStages||[];if(state.activeMainlineStage&&!stages.some(stage=>stage.id===state.activeMainlineStage))state.activeMainlineStage='';select.innerHTML=stages.length?`<option value="">全部阶段（不筛选）</option>${stages.map((stage,index)=>`<option value="${esc(stage.id)}">${index+1}. ${esc(stage.name)}</option>`).join('')}`:'<option value="">先定义主线阶段</option>';select.disabled=!stages.length;select.value=state.activeMainlineStage||''};
+        const baseRender=render;
+        render=()=>{const result=baseRender();markerLayer.querySelectorAll('.marker').forEach(marker=>{const poi=state.pois.find(item=>item.id===marker.dataset.poi),visible=!!poi&&appearsAtCurrentStage(poi);marker.hidden=!visible;marker.classList.toggle('stage-hidden',!visible)});renderStageFilter();return result};
+        const baseSelectInBox=selectInBox;
+        selectInBox=(a,b)=>{baseSelectInBox(a,b);const visible=state.multiSelected.filter(id=>appearsAtCurrentStage(state.pois.find(poi=>poi.id===id)));if(visible.length!==state.multiSelected.length){state.multiSelected=visible;render();showToast(visible.length?`已框选 ${visible.length} 个当前阶段可见标点`:'框选区域内没有当前阶段可见标点')}};
+        select.onchange=()=>{state.activeMainlineStage=select.value;render()};
+        render();
+      }
+    })();
+  </script>
+  <script>
+    (()=>{
+      const taskTypes=['主线','重要支线','次要支线'];
+      const taskColors={主线:'#ffe66d',重要支线:'#93dcff',次要支线:'#78df9c'};
+      const normalizeTaskTags=value=>[...new Set((Array.isArray(value)?value:[]).map(tag=>String(tag||'').trim()).filter(Boolean))];
+      const normalizeTaskLines=value=>{
+        const used=new Set();
+        return(Array.isArray(value)?value:[]).map((raw,index)=>{
+          let id=typeof raw?.id==='string'&&raw.id?raw.id:`task-${index+1}`;
+          while(used.has(id))id=`${id}-${index+1}`;
+          used.add(id);
+          return{id,type:taskTypes.includes(raw?.type)?raw.type:'次要支线',taskId:String(raw?.taskId||''),name:String(raw?.name||''),tag:String(raw?.tag||'').trim(),steps:(Array.isArray(raw?.steps)?raw.steps:[]).map(step=>({poiId:typeof step==='string'?step:String(step?.poiId||'')})).filter(step=>step.poiId)};
+        });
+      };
+      const normalizeTaskView=()=>{
+        state.taskLines=normalizeTaskLines(state.taskLines);
+        state.taskTags=normalizeTaskTags([...(state.taskTags||[]),...state.taskLines.map(task=>task.tag)]);
+        state.visibleTaskLines=[...new Set((Array.isArray(state.visibleTaskLines)?state.visibleTaskLines:[]).filter(id=>state.taskLines.some(task=>task.id===id)))];
+        state.routeArrowWidth=Math.max(1,Math.min(12,Number(state.routeArrowWidth)||3));
+        state.routeArrowHeadSize=Math.max(4,Math.min(36,Number(state.routeArrowHeadSize)||9));
+        state.taskRoutePanelCollapsed=!!state.taskRoutePanelCollapsed;
+        state.taskRouteCollapsedTags=normalizeTaskTags(state.taskRouteCollapsedTags);
+      };
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>{const taskLines=normalizeTaskLines(data?.taskLines),taskTags=normalizeTaskTags([...(data?.taskTags||[]),...taskLines.map(task=>task.tag)]);baseApplyConfig({...data,taskLines,taskTags});normalizeTaskView()};
+
+      // SVG 的 className 是特殊对象；使用 attribute 赋值可兼容 Chrome、Edge 与本地 file 页面。
+      const routeLayer=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      routeLayer.id='routeLayer';routeLayer.setAttribute('class','route-layer');
+      markerLayer.after(routeLayer);
+      const mapPointForRoute=poi=>({x:mapLayout.left+view.x+Number(poi.x)/100*mapLayout.width*view.zoom,y:mapLayout.top+view.y+Number(poi.y)/100*mapLayout.height*view.zoom});
+      const isPoiDrawn=id=>{const marker=[...markerLayer.querySelectorAll('.marker')].find(node=>node.dataset.poi===id);return!!marker&&!marker.hidden&&!marker.classList.contains('stage-hidden')&&!marker.classList.contains('gameplay-hidden')};
+      const drawRoutes=()=>{
+        normalizeTaskView();
+        const width=map.clientWidth,height=map.clientHeight;
+        routeLayer.setAttribute('viewBox',`0 0 ${width} ${height}`);routeLayer.setAttribute('width',width);routeLayer.setAttribute('height',height);
+        const activeTasks=state.taskLines.filter(task=>state.visibleTaskLines.includes(task.id));
+        const legs=[];
+        activeTasks.forEach(task=>task.steps.forEach((step,index)=>{if(index===0)return;const previous=task.steps[index-1],from=state.pois.find(poi=>poi.id===previous.poiId),to=state.pois.find(poi=>poi.id===step.poiId);if(!from||!to||!isPoiDrawn(from.id)||!isPoiDrawn(to.id))return;legs.push({task,from,to,index})}));
+        const pairs=new Map(),loops=new Map();
+        legs.forEach(leg=>{if(leg.from.id===leg.to.id){const count=loops.get(leg.from.id)||0;leg.loopIndex=count;loops.set(leg.from.id,count+1);return}const key=[leg.from.id,leg.to.id].sort().join('::'),group=pairs.get(key)||[];group.push(leg);pairs.set(key,group)});
+        const arrowSize=state.routeArrowHeadSize;
+        const arrowId=type=>`route-arrow-${taskTypes.indexOf(type)}`;
+        let svg=`<defs>${taskTypes.map(type=>`<marker id="${arrowId(type)}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="${arrowSize}" markerHeight="${arrowSize}" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${taskColors[type]}"/></marker>`).join('')}</defs>`;
+        legs.forEach(leg=>{
+          const color=taskColors[leg.task.type],a=mapPointForRoute(leg.from),b=mapPointForRoute(leg.to);
+          let d='';
+          if(leg.from.id===leg.to.id){const side=leg.loopIndex%2? -1:1,radius=18+state.routeArrowWidth*2+Math.floor(leg.loopIndex/2)*11;d=`M ${a.x} ${a.y} C ${a.x+side*radius} ${a.y-radius} ${a.x+side*radius} ${a.y+radius} ${a.x} ${a.y}`}
+          else{const key=[leg.from.id,leg.to.id].sort().join('::'),group=pairs.get(key)||[],ordinal=group.indexOf(leg),first=leg.from.id<leg.to.id?leg.from:leg.to,second=first===leg.from?leg.to:leg.from,fa=mapPointForRoute(first),fb=mapPointForRoute(second),dx=fb.x-fa.x,dy=fb.y-fa.y,length=Math.max(1,Math.hypot(dx,dy)),curve=(ordinal-(group.length-1)/2)*Math.min(28,10+state.routeArrowWidth*2),cx=(a.x+b.x)/2+(-dy/length)*curve,cy=(a.y+b.y)/2+(dx/length)*curve;d=`M ${a.x} ${a.y} Q ${cx} ${cy} ${b.x} ${b.y}`}
+          svg+=`<path d="${d}" fill="none" stroke="${color}" stroke-width="${state.routeArrowWidth}" stroke-linecap="round" stroke-linejoin="round" opacity=".96" marker-end="url(#${arrowId(leg.task.type)})"/>`;
+        });
+        routeLayer.innerHTML=svg;
+      };
+      const baseMoveMarkerNodes=moveMarkerNodes;
+      moveMarkerNodes=ids=>{baseMoveMarkerNodes(ids);drawRoutes()};
+
+      const mapTools=$('.map-tools');
+      if(mapTools&&!document.getElementById('routeArrowWidth')){
+        const control=document.createElement('div');control.className='btn size-control arrow-size-control';control.innerHTML='<label for="routeArrowWidth">动线箭头粗细 <span id="routeArrowWidthValue">3px</span></label><input id="routeArrowWidth" type="range" min="1" max="12" value="3" />';
+        mapTools.insertBefore(control,$('#resetView'));
+        const input=$('#routeArrowWidth'),value=$('#routeArrowWidthValue');
+        input.oninput=()=>{state.routeArrowWidth=Number(input.value);value.textContent=`${state.routeArrowWidth}px`;drawRoutes()};
+        const headControl=document.createElement('div');headControl.className='btn size-control arrow-size-control';headControl.innerHTML='<label for="routeArrowHeadSize">箭头尖端 <span id="routeArrowHeadSizeValue">9px</span></label><input id="routeArrowHeadSize" type="range" min="4" max="36" value="9" />';
+        mapTools.insertBefore(headControl,$('#resetView'));
+        const headInput=$('#routeArrowHeadSize'),headValue=$('#routeArrowHeadSizeValue');
+        headInput.oninput=()=>{state.routeArrowHeadSize=Number(headInput.value);headValue.textContent=`${state.routeArrowHeadSize}px`;drawRoutes()};
+      }
+
+      const topActions=document.querySelector('.top-actions');
+      let editingTaskId=null;
+      let button=document.getElementById('manageTaskLines');
+      if(!button&&topActions){button=document.createElement('button');button.className='btn primary';button.id='manageTaskLines';button.textContent='任务动线';topActions.insertBefore(button,document.getElementById('calibrateBtn'))}
+      if(button&&!document.getElementById('taskModal'))document.body.insertAdjacentHTML('beforeend','<div class="modal" id="taskModal" style="display:none"><div class="dialog"><div class="eyebrow">任务动线</div><h2>管理任务路线</h2><p>在这里定义任务线、任务信息与途径标点；要显示哪些任务动线，请在左侧筛选区勾选。</p><div class="task-list" id="taskList"></div><div class="task-editor" id="taskEditor"></div><div class="wizard-footer"><span></span><button class="btn" id="closeTasks">完成</button></div></div></div>');
+      if(button&&document.getElementById('taskModal')){
+        const taskListElement=$('#taskList'),taskEditorElement=$('#taskEditor');
+        if(!document.getElementById('taskManagerLayout')){
+          const layout=document.createElement('div'),pane=document.createElement('section');
+          layout.id='taskManagerLayout';pane.className='task-list-pane';
+          pane.innerHTML='<div class="task-list-toolbar"><input id="taskSearch" placeholder="搜索任务 ID、名称或标签…" aria-label="搜索任务线"/><button class="btn primary" id="newTaskFromList">＋ 新建</button></div>';
+          taskListElement.before(layout);layout.append(pane,taskEditorElement);pane.append(taskListElement);
+        }
+        let taskManagerQuery='';
+        const taskBy=id=>state.taskLines.find(task=>task.id===id);
+        const syncTaskDraft=()=>{const current=taskBy(editingTaskId),type=$('#editTaskType'),taskId=$('#editTaskId'),name=$('#editTaskName'),tag=$('#editTaskTag');if(!current)return null;if(type)current.type=type.value;if(taskId)current.taskId=taskId.value;if(name)current.name=name.value;if(tag)current.tag=tag.value;return current};
+        const poiName=id=>state.pois.find(poi=>poi.id===id)?.name||`已删除的标点 (${id})`;
+        const renderTaskEditor=()=>{
+          const task=taskBy(editingTaskId),editor=$('#taskEditor');
+          if(!task){editor.innerHTML='<div class="row"><button class="btn primary" id="newTask">＋ 新建任务线</button></div>';$('#newTask').onclick=()=>{const id=`task-${Date.now()}`;state.taskLines.push({id,type:'主线',taskId:'',name:'新任务',tag:'',steps:[]});editingTaskId=id;renderTaskManager()};return}
+          const poiOptions=state.pois.length?state.pois.map(poi=>`<option value="${esc(poi.id)}">${esc(poi.name)}</option>`).join(''):'<option value="">暂无可添加的标点</option>';
+          const taskTagOptions=['<option value="">未标记</option>',...state.taskTags.map(tag=>`<option value="${esc(tag)}" ${task.tag===tag?'selected':''}>${esc(tag)}</option>`)].join('');
+          const stepOptions=poiId=>{const exists=state.pois.some(poi=>poi.id===poiId);return`${exists?'':`<option value="${esc(poiId)}" selected>已删除的标点 (${esc(poiId)})</option>`}${state.pois.map(poi=>`<option value="${esc(poi.id)}" ${poi.id===poiId?'selected':''}>${esc(poi.name)}</option>`).join('')}`};
+          editor.innerHTML=`<h3>编辑任务线</h3><div class="task-form-grid"><select id="editTaskType">${taskTypes.map(type=>`<option ${task.type===type?'selected':''}>${type}</option>`).join('')}</select><input id="editTaskId" value="${esc(task.taskId)}" placeholder="任务 ID"/><input id="editTaskName" value="${esc(task.name)}" placeholder="任务名称"/></div><div class="field task-tag-field"><label>任务标签（可选）</label><div class="task-tag-row"><select id="editTaskTag">${taskTagOptions}</select><input id="newTaskTag" placeholder="新建唯一标签"/><button class="btn" id="addTaskTagBtn">新增标签</button></div></div><div class="task-route-add"><select id="addTaskStep" ${state.pois.length?'':'disabled'}>${poiOptions}</select><button class="btn primary" id="addTaskStepBtn" ${state.pois.length?'':'disabled'}>添加途径标点</button></div><div class="task-step-list">${task.steps.length?task.steps.map((step,index)=>{const missing=!state.pois.some(poi=>poi.id===step.poiId);return`<div class="task-step ${missing?'missing':''}"><span class="task-step-index">${index+1}</span><select data-step-poi="${index}" aria-label="第 ${index+1} 个途径标点">${stepOptions(step.poiId)}</select><div class="row"><button class="btn" data-step-up="${index}" ${index===0?'disabled':''}>↑</button><button class="btn" data-step-down="${index}" ${index===task.steps.length-1?'disabled':''}>↓</button><button class="btn danger" data-step-remove="${index}">移除</button></div>${missing?'<small>当前引用已删除；请选择新的标点</small>':''}</div>`}).join(''):'<div class="empty">尚未添加途径标点</div>'}</div><div class="wizard-footer"><button class="btn" id="cancelTaskEdit">取消编辑</button><button class="btn primary" id="saveTask">保存任务线</button></div>`;
+          $('#addTaskTagBtn').onclick=()=>{syncTaskDraft();const tag=$('#newTaskTag').value.trim();if(!tag){showToast('请输入任务标签');return}if(!state.taskTags.includes(tag))state.taskTags.push(tag);else showToast('已存在同名任务标签');const select=$('#editTaskTag');select.innerHTML=['<option value="">未标记</option>',...state.taskTags.map(item=>`<option value="${esc(item)}">${esc(item)}</option>`)].join('');select.value=tag;$('#newTaskTag').value=''};
+          $('#addTaskStepBtn').onclick=()=>{const poiId=$('#addTaskStep')?.value,current=syncTaskDraft();if(!current){showToast('当前任务线已不存在，请重新打开任务动线');return}if(!poiId||!state.pois.some(poi=>poi.id===poiId)){showToast('请选择一个有效的标点');return}current.steps=Array.isArray(current.steps)?current.steps:[];current.steps.push({poiId});renderTaskManager();render();showToast('已添加途径标点')};
+          editor.querySelector('.task-step-list').onclick=event=>{const action=event.target.closest('[data-step-up],[data-step-down],[data-step-remove]'),current=syncTaskDraft();if(!action||!current)return;const index=Number(action.dataset.stepUp??action.dataset.stepDown??action.dataset.stepRemove);current.steps=Array.isArray(current.steps)?current.steps:[];if(action.dataset.stepRemove!==undefined)current.steps.splice(index,1);else{const next=index+(action.dataset.stepUp!==undefined?-1:1);if(next>=0&&next<current.steps.length){const [step]=current.steps.splice(index,1);current.steps.splice(next,0,step)}}renderTaskManager();render()};
+          editor.querySelector('.task-step-list').onchange=event=>{const select=event.target.closest('[data-step-poi]'),current=syncTaskDraft();if(!select||!current)return;const index=Number(select.dataset.stepPoi),poiId=select.value;if(!state.pois.some(poi=>poi.id===poiId))return;current.steps[index]={poiId};renderTaskManager();render();showToast('途径标点已更新')};
+          $('#cancelTaskEdit').onclick=()=>{editingTaskId=null;renderTaskManager()};
+          $('#saveTask').onclick=()=>{const current=syncTaskDraft(),taskId=$('#editTaskId').value.trim(),name=$('#editTaskName').value.trim();if(!current){showToast('当前任务线已不存在，请重新打开任务动线');return}if(!taskId||!name){showToast('请填写任务 ID 和任务名称');return}if(state.taskLines.some(other=>other.id!==current.id&&other.taskId===taskId)){showToast('任务 ID 已存在');return}Object.assign(current,{taskId,name});editingTaskId=null;renderTaskManager();render();showToast('任务线已保存')};
+        };
+        const renderTaskManager=()=>{
+          normalizeTaskView();
+          const query=taskManagerQuery.trim().toLowerCase(),tasks=state.taskLines.filter(task=>!query||`${task.taskId} ${task.name} ${task.tag} ${task.type}`.toLowerCase().includes(query));
+          $('#taskList').innerHTML=tasks.length?tasks.map(task=>{const missing=task.steps.filter(step=>!state.pois.some(poi=>poi.id===step.poiId)).length;return`<div class="task-item ${task.id===editingTaskId?'editing':''}"><span><strong>${esc(task.taskId||'未设 ID')} · ${esc(task.name||'未命名任务')}</strong><small>${esc(task.type)}${task.tag?` · 标签：${esc(task.tag)}`:''} · ${task.steps.length} 个途径${missing?` · ${missing} 个已删除引用`:''}</small></span><div class="row"><button class="btn" data-edit-task="${esc(task.id)}">编辑</button><button class="btn danger" data-delete-task="${esc(task.id)}">删除</button></div></div>`}).join(''):(state.taskLines.length?'<div class="empty">没有匹配的任务线</div>':'<div class="empty">尚未创建任务线</div>');
+          renderTaskEditor();renderRouteFilter();
+        };
+        $('#taskSearch').oninput=event=>{syncTaskDraft();taskManagerQuery=event.target.value;renderTaskManager()};
+        $('#newTaskFromList').onclick=()=>{editingTaskId=null;renderTaskManager()};
+        button.onclick=()=>{renderTaskManager();$('#taskModal').style.display='flex'};
+        $('#closeTasks').onclick=()=>{$('#taskModal').style.display='none'};
+        $('#taskList').onclick=event=>{const edit=event.target.closest('[data-edit-task]'),remove=event.target.closest('[data-delete-task]');if(edit){editingTaskId=edit.dataset.editTask;renderTaskManager();return}if(remove){const id=remove.dataset.deleteTask;state.taskLines=state.taskLines.filter(task=>task.id!==id);state.visibleTaskLines=state.visibleTaskLines.filter(item=>item!==id);if(editingTaskId===id)editingTaskId=null;renderTaskManager();render();showToast('任务线已删除')}};
+      }
+
+      const routeFilter=$('#taskRouteFilter'),routeFilterList=$('#taskRouteList'),routeFilterBody=$('#taskRouteBody');
+      const routeTagKey=tag=>tag||'__untagged__';
+      const renderRouteFilter=()=>{
+        if(!routeFilterList)return;
+        normalizeTaskView();
+        const isCollapsed=Boolean(state.taskRoutePanelCollapsed);
+        const panelToggle=routeFilter?.querySelector('[data-route-panel-toggle]');
+        routeFilter?.classList.toggle('route-panel-collapsed',isCollapsed);
+        if(routeFilterBody){
+          routeFilterBody.hidden=isCollapsed;
+          routeFilterBody.inert=isCollapsed;
+        }
+        if(panelToggle){
+          panelToggle.textContent=isCollapsed?'展开':'收起';
+          panelToggle.setAttribute('aria-expanded',String(!isCollapsed));
+        }
+        if(!state.taskLines.length){
+          routeFilterList.innerHTML='<span class="route-filter-empty">尚未创建任务线</span>';
+          return;
+        }
+        const tags=[...state.taskTags.filter(tag=>state.taskLines.some(task=>task.tag===tag)),...(state.taskLines.some(task=>!task.tag)?['']:[])];
+        routeFilterList.innerHTML=tags.map(tag=>{
+          const key=routeTagKey(tag),tasks=state.taskLines.filter(task=>(task.tag||'')===tag),collapsed=state.taskRouteCollapsedTags.includes(key);
+          return`<section class="route-tag-group ${collapsed?'route-tag-collapsed':''}"><button type="button" class="route-tag-head" data-route-tag-fold="${esc(key)}" aria-expanded="${!collapsed}"><span>${collapsed?'▸':'▾'} ${esc(tag||'未标记')}</span><small>${tasks.length} 条</small></button><div class="route-tag-tasks" ${collapsed?'hidden':''}>${tasks.map(task=>`<label class="route-filter-row"><input type="checkbox" data-route-visible="${esc(task.id)}" ${state.visibleTaskLines.includes(task.id)?'checked':''}/><span><strong>${esc(task.taskId||'未设 ID')} · ${esc(task.name||'未命名任务')}</strong><small>${esc(task.type)} · ${task.steps.length} 个途径</small></span></label>`).join('')}</div></section>`;
+        }).join('');
+      };
+      if(routeFilter){
+        routeFilter.onchange=event=>{
+          const input=event.target.closest('[data-route-visible]');
+          if(!input||!routeFilter.contains(input))return;
+          const id=input.dataset.routeVisible;
+          state.visibleTaskLines=input.checked?[...new Set([...state.visibleTaskLines,id])]:state.visibleTaskLines.filter(item=>item!==id);
+          drawRoutes();
+        };
+        routeFilter.onclick=event=>{
+          const control=event.target.closest('button[data-route-all],button[data-route-panel-toggle],button[data-route-tag-fold]');
+          if(!control||!routeFilter.contains(control))return;
+          event.preventDefault();
+          if(control.hasAttribute('data-route-all')){
+            state.visibleTaskLines=control.dataset.routeAll==='on'?state.taskLines.map(task=>task.id):[];
+            renderRouteFilter();
+            drawRoutes();
+            return;
+          }
+          if(control.hasAttribute('data-route-panel-toggle')){
+            state.taskRoutePanelCollapsed=!state.taskRoutePanelCollapsed;
+            renderRouteFilter();
+            return;
+          }
+          const key=control.dataset.routeTagFold;
+          state.taskRouteCollapsedTags=state.taskRouteCollapsedTags.includes(key)?state.taskRouteCollapsedTags.filter(item=>item!==key):[...state.taskRouteCollapsedTags,key];
+          renderRouteFilter();
+        };
+      }
+
+      const baseMergePoiSelection=mergePoiSelection;
+      mergePoiSelection=(data,replaceRegion=null)=>{baseMergePoiSelection(data,replaceRegion);const imported=normalizeTaskLines(data?.taskLines);imported.forEach(task=>{const current=state.taskLines.find(item=>item.id===task.id);if(current)Object.assign(current,task);else state.taskLines.push(task)});state.taskTags=normalizeTaskTags([...(state.taskTags||[]),...(data?.taskTags||[]),...imported.map(task=>task.tag)]);render()};
+      const baseExportSelectedPois=exportSelectedPois;
+      exportSelectedPois=()=>{const selected=new Set(state.multiSelected),tasks=state.taskLines.filter(task=>task.steps.some(step=>selected.has(step.poiId))),taskTags=normalizeTaskTags(tasks.map(task=>task.tag)),pois=state.pois.filter(poi=>selected.has(poi.id)),typeIds=[...new Set(pois.map(poi=>poi.type))],types=state.types.filter(type=>typeIds.includes(type.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(tag=>pois.some(poi=>(poi.tags||[]).includes(tag))),regionTags=state.regionTags.filter(tag=>pois.some(poi=>normalizeRegions(poi).includes(tag)));if(!pois.length){showToast('请先框选至少一个标点');return}downloadJson({format:'worldmark-poi-selection',version:4,exportedAt:new Date().toISOString(),types,gameplayTags,regionTags,mainlineStages:state.mainlineStages,taskTags,taskLines:tasks,pois},'worldmark-poi-selection.json');$('#poiContextMenu').style.display='none';showToast(`已导出 ${pois.length} 个标点及关联任务线`)};
+      $('#exportSelection').onclick=exportSelectedPois;
+      exportRegionSync=tag=>{const pois=state.pois.filter(poi=>normalizeRegions(poi).includes(tag)),poiIds=new Set(pois.map(poi=>poi.id)),tasks=state.taskLines.filter(task=>task.steps.some(step=>poiIds.has(step.poiId))),taskTags=normalizeTaskTags(tasks.map(task=>task.tag)),typeIds=[...new Set(pois.map(poi=>poi.type))],types=state.types.filter(type=>typeIds.includes(type.id)).map(cleanType),gameplayTags=state.gameplayTags.filter(gameplayTag=>pois.some(poi=>(poi.tags||[]).includes(gameplayTag))),regionTags=state.regionTags.filter(regionTag=>pois.some(poi=>normalizeRegions(poi).includes(regionTag)));downloadJson({format:'worldmark-region-sync',version:4,exportedAt:new Date().toISOString(),regionTag:tag,types,gameplayTags,regionTags,mainlineStages:state.mainlineStages,taskTags,taskLines:tasks,pois},`worldmark-region-${tag.replace(/[^\w-]+/g,'-')||'export'}.json`);showToast(`已导出“${tag}”区域的 ${pois.length} 个标点及关联任务线`)};
+
+      const baseRender=render;
+      render=()=>{const result=baseRender(),input=$('#routeArrowWidth'),value=$('#routeArrowWidthValue'),headInput=$('#routeArrowHeadSize'),headValue=$('#routeArrowHeadSizeValue');if(input){input.value=state.routeArrowWidth;if(value)value.textContent=`${state.routeArrowWidth}px`}if(headInput){headInput.value=state.routeArrowHeadSize;if(headValue)headValue.textContent=`${state.routeArrowHeadSize}px`}renderRouteFilter();drawRoutes();return result};
+      render();
+    })();
+  </script>
+  <script>
+    (()=>{
+      // 区域筛选是个人视图设置：多选时显示命中任一所选区域的标点，不会同步给协作者。
+      if(document.getElementById('regionViewFilter'))return;
+      const iconSizeInput=document.getElementById('iconSize');
+      if(iconSizeInput)iconSizeInput.min='2';
+      const filter=document.createElement('details');
+      filter.id='regionViewFilter';
+      filter.className='gameplay-filter';
+      const anchor=document.getElementById('mainlineStageFilter')||document.getElementById('gameplayFilter');
+      anchor?.insertAdjacentElement('afterend',filter);
+      const normalizeRegionFilter=()=>{state.regionFilter=normalizeTags(state.regionFilter).filter(tag=>(state.regionTags||[]).includes(tag))};
+      const matchesRegionFilter=poi=>!state.regionFilter.length||normalizeRegions(poi).some(tag=>state.regionFilter.includes(tag));
+      const renderRegionFilter=()=>{
+        normalizeRegionFilter();
+        const open=filter.open,selected=state.regionFilter,tags=state.regionTags||[];
+        const summary=selected.length?`已选 ${selected.length} 个区域`:'全部区域';
+        filter.innerHTML=`<summary><span>区域筛选</span><span class="gameplay-filter-summary">${esc(summary)}</span></summary>${tags.length?`<div class="gameplay-filter-options">${tags.map(tag=>`<label class="tag-choice" title="${esc(tag)}"><input type="checkbox" data-region-filter value="${esc(tag)}" ${selected.includes(tag)?'checked':''}/>${esc(tag)}</label>`).join('')}${selected.length?'<button class="btn filter-clear" type="button" data-clear-region-filter>清除筛选</button>':''}</div>`:'<div class="gameplay-filter-empty">暂无区域标签</div>'}`;
+        filter.open=open;
+      };
+      const baseApplyConfig=applyConfig;
+      applyConfig=data=>baseApplyConfig({...data,regionFilter:normalizeTags(data?.regionFilter)});
+      const baseSelectInBox=selectInBox;
+      selectInBox=(a,b)=>{baseSelectInBox(a,b);const visible=state.multiSelected.filter(id=>matchesRegionFilter(state.pois.find(poi=>poi.id===id)));if(visible.length!==state.multiSelected.length){state.multiSelected=visible;render();showToast(visible.length?`已框选 ${visible.length} 个符合区域筛选的标点`:'框选区域内没有符合区域筛选的标点')}};
+      const baseRender=render;
+      render=()=>{normalizeRegionFilter();const result=baseRender();markerLayer.querySelectorAll('.marker').forEach(marker=>{const poi=state.pois.find(item=>item.id===marker.dataset.poi),visible=!!poi&&matchesRegionFilter(poi);if(!visible)marker.hidden=true;marker.classList.toggle('region-hidden',!visible)});document.getElementById('taskRouteFilter')?.classList.toggle('has-task-scroll',(state.taskLines||[]).length>2);renderRegionFilter();return result};
+      filter.addEventListener('change',event=>{if(!event.target.matches('[data-region-filter]'))return;state.regionFilter=[...filter.querySelectorAll('[data-region-filter]:checked')].map(input=>input.value);render()});
+      filter.addEventListener('click',event=>{if(!event.target.closest('[data-clear-region-filter]'))return;state.regionFilter=[];render()});
+      render();
+    })();
+  </script>
+  <script>
+    (()=>{
+      // 框选后的批量编辑：每次只改一个字段，保留其余标点信息与相对位置。
+      const menu=$('#poiContextMenu');
+      if(!menu||document.getElementById('batchEditSelection'))return;
+
+      const batchButton=document.createElement('button');
+      batchButton.className='btn';
+      batchButton.id='batchEditSelection';
+      batchButton.type='button';
+      batchButton.textContent='批量修改已框选标点';
+      menu.insertBefore(batchButton,$('#exportSelection'));
+
+      const modal=document.createElement('div');
+      modal.className='modal';
+      modal.id='batchEditModal';
+      modal.style.display='none';
+      modal.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="batchEditTitle"><div class="eyebrow">批量编辑</div><h2 id="batchEditTitle">统一修改标点字段</h2><p class="batch-edit-count" id="batchEditCount"></p><div class="field"><label for="batchEditField">要修改的字段</label><select id="batchEditField"><option value="name">名称</option><option value="type">标点类型</option><option value="note">描述 / 设计备注</option><option value="confirmed">已确定</option><option value="duration">预期体验时长</option><option value="regions">区域标签</option><option value="tags">玩法类型标签</option><option value="stageRange">主线阶段范围</option></select></div><div class="batch-edit-value" id="batchEditValue"></div><p class="batch-edit-help" id="batchEditHelp"></p><div class="wizard-footer"><button class="btn" type="button" id="cancelBatchEdit">取消</button><button class="btn primary" type="button" id="applyBatchEdit">应用到已框选标点</button></div></div>';
+      document.body.append(modal);
+
+      const fieldLabels={name:'名称',type:'标点类型',note:'描述 / 设计备注',confirmed:'已确定',duration:'预期体验时长',regions:'区域标签',tags:'玩法类型标签',stageRange:'主线阶段范围'};
+      const selectedPois=()=>{
+        const selected=new Set(state.multiSelected||[]);
+        return state.pois.filter(poi=>selected.has(poi.id));
+      };
+      const field=$('#batchEditField'),value=$('#batchEditValue'),help=$('#batchEditHelp'),count=$('#batchEditCount');
+      const stageOptions=(emptyLabel)=>`<option value="">${emptyLabel}</option>${(state.mainlineStages||[]).map((stage,index)=>`<option value="${esc(stage.id)}">${index+1}. ${esc(stage.name)}</option>`).join('')}`;
+      const renderTagChoices=(kind,query='')=>{
+        const tags=kind==='regions'?(state.regionTags||[]):(state.gameplayTags||[]);
+        const matches=tags.filter(tag=>tag.toLowerCase().includes(query.trim().toLowerCase()));
+        const choices=$('#batchTagChoices');
+        if(!choices)return;
+        choices.innerHTML=matches.length?matches.map(tag=>`<label class="tag-choice"><input type="checkbox" value="${esc(tag)}"/>${esc(tag)}</label>`).join(''):`<span class="text-muted">${tags.length?'没有匹配的标签。':'暂无可用标签。'}</span>`;
+      };
+      const renderBatchValue=()=>{
+        const kind=field.value;
+        if(kind==='name'){
+          value.innerHTML='<div class="field"><label for="batchName">统一名称</label><input id="batchName" placeholder="请输入名称"/></div>';
+          help.textContent='会将所有已框选标点改为同一个名称；独特 ID 与其它字段不会改变。';
+          return;
+        }
+        if(kind==='type'){
+          value.innerHTML=`<div class="field"><label for="batchType">统一设为</label><select id="batchType">${state.types.map(type=>`<option value="${esc(type.id)}">${esc(type.name)} · ${esc(deliveryForm(type.layer))}</option>`).join('')}</select></div>`;
+          help.textContent='将所选标点全部更换为该类型；它们的位置、名称和其它字段不会改变。';
+          return;
+        }
+        if(kind==='note'){
+          value.innerHTML='<div class="field"><label for="batchNote">统一备注</label><textarea id="batchNote" placeholder="留空即可清除全部所选标点的备注"></textarea></div>';
+          help.textContent='会完全替换所选标点当前的设计备注；留空可统一清除。';
+          return;
+        }
+        if(kind==='confirmed'){
+          value.innerHTML='<div class="field"><label for="batchConfirmed">统一状态</label><select id="batchConfirmed"><option value="true">已确定</option><option value="false">未确定</option></select></div>';
+          help.textContent='会统一影响“已确定”筛选与虚化显示。';
+          return;
+        }
+        if(kind==='duration'){
+          value.innerHTML='<div class="batch-duration-row"><div class="field"><label for="batchDurationMode">操作</label><select id="batchDurationMode"><option value="set">设为时长</option><option value="clear">清除时长</option></select></div><div class="field" id="batchDurationValue"><label for="batchDuration">秒数</label><input id="batchDuration" type="number" min="0" step="1" placeholder="例如：90"/></div></div>';
+          $('#batchDurationMode').onchange=event=>{$('#batchDurationValue').hidden=event.target.value==='clear'};
+          help.textContent='时长以秒为单位；选择“清除时长”会统一改为未设置。';
+          return;
+        }
+        if(kind==='regions'||kind==='tags'){
+          const title=kind==='regions'?'区域标签':'玩法类型标签';
+          value.innerHTML=`<div class="field"><label for="batchTagSearch">选择统一的${title}</label><input class="batch-tag-search" id="batchTagSearch" placeholder="搜索${title}…"/><div class="tag-choices batch-tag-choices" id="batchTagChoices"></div></div>`;
+          $('#batchTagSearch').oninput=event=>renderTagChoices(kind,event.target.value);
+          renderTagChoices(kind);
+          help.textContent=`会用当前勾选的${title}完全替换所选标点的${title}；不勾选任何项可统一清除。`;
+          return;
+        }
+        value.innerHTML=`<div class="stage-range-grid"><div class="field"><label for="batchStageStart">出现阶段</label><select id="batchStageStart">${stageOptions('不限（从第一阶段出现）')}</select></div><div class="field"><label for="batchStageEnd">消失阶段</label><select id="batchStageEnd">${stageOptions('不限（持续到最后）')}</select></div></div>`;
+        const disabled=!(state.mainlineStages||[]).length;
+        $('#batchStageStart').disabled=disabled;
+        $('#batchStageEnd').disabled=disabled;
+        help.textContent=disabled?'尚未定义主线阶段；应用后将设为“所有阶段出现”。':'会用此范围完全替换所选标点的主线阶段范围；范围两端均包含在内。';
+      };
+      const closeBatchEditor=()=>{modal.style.display='none';menu.style.display='none'};
+      const openBatchEditor=()=>{
+        const pois=selectedPois();
+        if(!pois.length){showToast('请先框选至少一个标点');return}
+        count.textContent=`已选中 ${pois.length} 个标点`;
+        renderBatchValue();
+        modal.style.display='flex';
+        field.focus();
+      };
+      const applyBatchEdit=()=>{
+        const pois=selectedPois();
+        if(!pois.length){closeBatchEditor();showToast('已没有可批量修改的标点');return}
+        const kind=field.value;
+        let update;
+        if(kind==='name'){
+          const name=$('#batchName').value.trim();
+          if(!name){showToast('名称不能为空');return}
+          update=poi=>{poi.name=name};
+        }else if(kind==='type'){
+          const typeId=$('#batchType').value;
+          if(!state.types.some(type=>type.id===typeId)){showToast('请选择有效的标点类型');return}
+          update=poi=>{poi.type=typeId};
+          if(!state.visibleTypes.includes(typeId))state.visibleTypes.push(typeId);
+        }else if(kind==='note'){
+          const note=$('#batchNote').value.trim();
+          update=poi=>{poi.note=note};
+        }else if(kind==='confirmed'){
+          const confirmed=$('#batchConfirmed').value==='true';
+          update=poi=>{poi.confirmed=confirmed};
+        }else if(kind==='duration'){
+          const mode=$('#batchDurationMode').value;
+          const duration=mode==='clear'?null:Number($('#batchDuration').value);
+          if(mode!=='clear'&&(!Number.isFinite(duration)||duration<0)){showToast('预期体验时长须为非负秒数');return}
+          update=poi=>{poi.duration=duration};
+        }else if(kind==='regions'||kind==='tags'){
+          const selected=normalizeTags([...document.querySelectorAll('#batchTagChoices input:checked')].map(input=>input.value));
+          update=poi=>{poi[kind]=[...selected]};
+        }else{
+          const start=$('#batchStageStart').value||null,end=$('#batchStageEnd').value||null;
+          const index=id=>(state.mainlineStages||[]).findIndex(stage=>stage.id===id);
+          if(start&&end&&index(start)>index(end)){showToast('出现阶段不能晚于消失阶段');return}
+          update=poi=>{poi.stageRange={start,end}};
+        }
+        pois.forEach(update);
+        closeBatchEditor();
+        render();
+        showToast(`已统一修改 ${pois.length} 个标点的“${fieldLabels[kind]}”`);
+      };
+
+      batchButton.onclick=openBatchEditor;
+      $('#cancelBatchEdit').onclick=closeBatchEditor;
+      $('#applyBatchEdit').onclick=applyBatchEdit;
+      field.onchange=renderBatchValue;
+      map.addEventListener('contextmenu',()=>{batchButton.style.display=selectedPois().length?'block':'none'});
+      document.addEventListener('keydown',event=>{
+        if(event.key!=='Escape'||modal.style.display!=='flex')return;
+        event.preventDefault();
+        event.stopPropagation();
+        closeBatchEditor();
+      },true);
+    })();
+  </script>
+  <script>
+    (()=>{
+      // 在筛选视图内新建时预填对应字段，防止保存后因本地筛选而看似“消失”。
+      const baseOpenPoiForm=openPoiForm;
+      openPoiForm=position=>{
+        baseOpenPoiForm(position);
+        const visibleGameplayTags=normalizeTags(state.gameplayFilter||[]);
+        const visibleRegions=normalizeTags(state.regionFilter||[]);
+        if(visibleGameplayTags.length)renderPoiTagChoices(visibleGameplayTags);
+        if(visibleRegions.length){
+          $('#regionSearch').value='';
+          renderPoiRegionChoices(visibleRegions);
+        }
+        if(state.confirmedViewMode==='hide')$('#poiConfirmed').checked=true;
+      };
+    })();
+  </script>
+  <script>
+    (()=>{
+      // 侧栏计数反映此刻实际渲染且可见的标点，而不是配置中的总数。
+      const updateVisibleTypeCounts=()=>{
+        const counts=new Map();
+        markerLayer.querySelectorAll('.marker').forEach(marker=>{
+          if(marker.hidden||marker.classList.contains('gameplay-hidden')||marker.classList.contains('stage-hidden')||marker.classList.contains('region-hidden'))return;
+          const poi=state.pois.find(item=>item.id===marker.dataset.poi);
+          if(poi)counts.set(poi.type,(counts.get(poi.type)||0)+1);
+        });
+        document.querySelectorAll('[data-visible-type-count]').forEach(node=>{
+          node.textContent=String(counts.get(node.dataset.visibleTypeCount)||0);
+        });
+      };
+      const baseRender=render;
+      render=()=>{const result=baseRender();updateVisibleTypeCounts();return result};
+      render();
+    })();
+  </script>
+  <!-- GitHub Pages re-publish trigger: no functional effect. -->
+</body>
+</html>
